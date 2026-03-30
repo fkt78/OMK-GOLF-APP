@@ -3,7 +3,7 @@ import { Crown, LogOut, ChevronDown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function AuthButton() {
-  const { user, profile, signInWithGoogle, signOut, isPremium, FREE_ROUND_LIMIT } = useAuth()
+  const { user, profile, displayName, photoURL, signInWithGoogle, signOut, isPremium, FREE_ROUND_LIMIT } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
   if (!user) {
@@ -31,11 +31,11 @@ export default function AuthButton() {
         className="flex items-center gap-1.5"
         aria-label="アカウントメニュー"
       >
-        {user.photoURL ? (
-          <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full border-2 border-golf-fairway" />
+        {photoURL ? (
+          <img src={photoURL} alt="" className="w-8 h-8 rounded-full border-2 border-golf-fairway object-cover" />
         ) : (
           <div className="w-8 h-8 rounded-full bg-golf-fairway flex items-center justify-center text-white text-sm font-bold">
-            {user.displayName?.[0] ?? 'U'}
+            {displayName?.[0] ?? 'U'}
           </div>
         )}
         <ChevronDown size={14} className="text-gray-300" />
@@ -47,7 +47,7 @@ export default function AuthButton() {
           <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
           <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 p-3 w-56 z-20">
             <div className="text-xs text-gray-500 mb-1 truncate">{user.email}</div>
-            <div className="text-sm font-semibold text-gray-800 mb-3">{user.displayName}</div>
+            <div className="text-sm font-semibold text-gray-800 mb-3">{displayName}</div>
 
             {isPremium ? (
               <div className="flex items-center gap-1.5 text-xs font-bold text-yellow-700 bg-yellow-50 px-2 py-1.5 rounded-lg mb-3">

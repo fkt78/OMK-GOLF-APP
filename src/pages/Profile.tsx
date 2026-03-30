@@ -12,6 +12,8 @@ export default function Profile() {
   const [saved, setSaved] = useState(false)
 
   const [form, setForm] = useState({
+    displayName: '',
+    photoURL: '',
     averageScore: '',
     driverDistance: '',
     handicap: '',
@@ -23,8 +25,11 @@ export default function Profile() {
   })
 
   useEffect(() => {
-    if (profile) {
-      setForm({
+    if (profile && user) {
+      setForm(f => ({
+        ...f,
+        displayName: profile.displayName ?? user.displayName ?? '',
+        photoURL: profile.photoURL ?? user.photoURL ?? '',
         averageScore: profile.averageScore?.toString() ?? '',
         driverDistance: profile.driverDistance?.toString() ?? '',
         handicap: profile.handicap?.toString() ?? '',
@@ -33,9 +38,9 @@ export default function Profile() {
         startedYear: profile.startedYear?.toString() ?? '',
         targetScore: profile.targetScore?.toString() ?? '',
         bio: profile.bio ?? '',
-      })
+      }))
     }
-  }, [profile])
+  }, [profile, user])
 
   const [saveError, setSaveError] = useState<string | null>(null)
 
@@ -45,6 +50,8 @@ export default function Profile() {
     setSaveError(null)
     try {
       const update: Partial<UserProfile> = {
+        displayName: form.displayName.trim() || null,
+        photoURL: form.photoURL.trim() || null,
         averageScore: form.averageScore ? Number(form.averageScore) : undefined,
         driverDistance: form.driverDistance ? Number(form.driverDistance) : undefined,
         handicap: form.handicap ? Number(form.handicap) : undefined,
@@ -100,20 +107,51 @@ export default function Profile() {
       </div>
 
       <div className="max-w-2xl mx-auto p-4 space-y-4">
-        {/* アカウント情報 */}
-        <div className="card flex items-center gap-4">
-          {user.photoURL ? (
-            <img src={user.photoURL} alt="" className="w-16 h-16 rounded-full" />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-golf-green flex items-center justify-center text-white text-2xl font-bold">
-              {user.displayName?.[0]}
+        {/* アカウント情報（表示名・アイコンはアプリ内で変更可。空欄のアイコンURLは Google の写真に戻る） */}
+        <div className="card space-y-4">
+          <div className="flex items-center gap-4">
+            {(form.photoURL.trim() || user.photoURL) ? (
+              <img
+                src={form.photoURL.trim() || user.photoURL || ''}
+                alt=""
+                className="w-16 h-16 rounded-full object-cover bg-gray-100"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-golf-green flex items-center justify-center text-white text-2xl font-bold">
+                {(form.displayName.trim() || user.displayName)?.[0] ?? '?'}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-gray-800 text-lg truncate">
+                {form.displayName.trim() || user.displayName || 'ユーザー'}
+              </div>
+              <div className="text-sm text-gray-400 truncate">{user.email}</div>
+              <div className={`text-xs font-bold mt-1 ${profile?.plan === 'premium' ? 'text-yellow-600' : 'text-gray-400'}`}>
+                {profile?.plan === 'premium' ? 'プレミアムプラン' : '無料プラン'}
+              </div>
             </div>
-          )}
-          <div>
-            <div className="font-bold text-gray-800 text-lg">{user.displayName}</div>
-            <div className="text-sm text-gray-400">{user.email}</div>
-            <div className={`text-xs font-bold mt-1 ${profile?.plan === 'premium' ? 'text-yellow-600' : 'text-gray-400'}`}>
-              {profile?.plan === 'premium' ? 'プレミアムプラン' : '無料プラン'}
+          </div>
+          <div className="space-y-3 pt-2 border-t border-gray-100">
+            <div>
+              <label className="text-xs text-gray-500">表示名</label>
+              <input
+                type="text"
+                value={form.displayName}
+                onChange={e => set('displayName', e.target.value)}
+                placeholder={user.displayName ?? '表示名'}
+                className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500">アイコン画像のURL</label>
+              <input
+                type="url"
+                value={form.photoURL}
+                onChange={e => set('photoURL', e.target.value)}
+                placeholder="空欄にすると Google のプロフィール写真を使用"
+                className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+              />
+              <p className="text-xs text-gray-400 mt-1">公開されている画像のURLを貼り付けてください。空欄で保存すると Google の写真に戻ります。</p>
             </div>
           </div>
         </div>

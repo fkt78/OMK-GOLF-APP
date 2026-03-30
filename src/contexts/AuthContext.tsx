@@ -14,6 +14,10 @@ export type Plan = 'free' | 'premium'
 interface AuthContextType {
   user: User | null
   profile: UserProfile | null
+  /** Firestore に保存した値を優先。未設定時は Google アカウントの名前 */
+  displayName: string | null
+  /** Firestore に保存した URL を優先。未設定時は Google のプロフィール写真 */
+  photoURL: string | null
   loading: boolean
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
@@ -83,10 +87,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isPremium = profile?.plan === 'premium'
   const canAddRound = isPremium || (profile?.roundCount ?? 0) < FREE_ROUND_LIMIT
 
+  const displayName = profile?.displayName ?? user?.displayName ?? null
+  const photoURL = profile?.photoURL ?? user?.photoURL ?? null
+
   return (
     <AuthContext.Provider value={{
       user,
       profile,
+      displayName,
+      photoURL,
       loading,
       signInWithGoogle,
       signOut,
