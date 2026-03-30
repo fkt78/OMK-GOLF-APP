@@ -1,6 +1,27 @@
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+
+const dir = dirname(fileURLToPath(import.meta.url))
+const pkg = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf-8')) as { version: string }
+
+/**
+ * ビルド日時をドット区切りで付与（例: 3月30日18:06 → 3.3.0.1.8.0.6）
+ * 先頭は package の semver、その後ろがビルド時点のローカル日時
+ */
+function dotBuildStamp(d = new Date()): string {
+  const month = d.getMonth() + 1
+  const dayStr = String(d.getDate()).padStart(2, '0')
+  const hStr = String(d.getHours()).padStart(2, '0')
+  const mStr = String(d.getMinutes()).padStart(2, '0')
+  return `${month}.${dayStr[0]}.${dayStr[1]}.${hStr[0]}.${hStr[1]}.${mStr[0]}.${mStr[1]}`
+}
+
+const appVersion = pkg.version ?? '0.0.0'
+const appVersionFull = `${appVersion}.${dotBuildStamp()}`
 
 export default defineConfig({
   plugins: [
@@ -54,7 +75,7 @@ export default defineConfig({
     }),
   ],
   define: {
-    // package.json のバージョンをアプリ内で使えるようにする
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __APP_VERSION__: JSON.stringify(appVersion),
+    __APP_VERSION_FULL__: JSON.stringify(appVersionFull),
   },
 })

@@ -37,7 +37,7 @@ export default function Home({ rounds, loading }: Props) {
               <h1 className="text-xl font-bold leading-tight">Golf Stats Pro</h1>
               <p className="text-gray-400 text-xs">
                 プロ級スタッツで自分のゲームを分析
-                <span className="ml-2 text-gray-500">v{__APP_VERSION__}</span>
+                <span className="ml-2 text-gray-500">v{__APP_VERSION_FULL__}</span>
               </p>
             </div>
           </div>

@@ -15,7 +15,7 @@ export default function UpdateNotification() {
       <div className="flex items-center gap-2">
         <RefreshCw size={15} className="shrink-0" />
         <span className="font-semibold text-sm">新しいバージョンが利用可能です</span>
-        <span className="text-green-200 text-xs">v{__APP_VERSION__}</span>
+        <span className="text-green-200 text-xs">v{__APP_VERSION_FULL__}</span>
       </div>
       <div className="flex items-center gap-2">
         <button
