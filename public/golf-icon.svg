@@ -1,18 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- 背景 -->
-  <rect width="512" height="512" rx="96" fill="#1a5c38"/>
-  <!-- ゴルフボール -->
-  <circle cx="200" cy="300" r="80" fill="white"/>
-  <!-- ボールのディンプル -->
-  <circle cx="180" cy="280" r="8" fill="#e0e0e0"/>
-  <circle cx="215" cy="270" r="8" fill="#e0e0e0"/>
-  <circle cx="235" cy="295" r="8" fill="#e0e0e0"/>
-  <circle cx="200" cy="315" r="8" fill="#e0e0e0"/>
-  <circle cx="165" cy="308" r="8" fill="#e0e0e0"/>
-  <!-- ピン -->
-  <line x1="340" y1="140" x2="340" y2="360" stroke="white" stroke-width="10" stroke-linecap="round"/>
-  <!-- フラッグ -->
-  <polygon points="340,140 420,175 340,210" fill="#ef4444"/>
-  <!-- 地面 -->
-  <ellipse cx="340" cy="360" rx="40" ry="10" fill="#4caf78"/>
+  <!-- Background: HIG準拠 - iOS がコーナーを丸める -->
+  <rect width="512" height="512" fill="#1a5c38"/>
+  <!-- 微細なグラデーションで奥行き -->
+  <rect width="512" height="512" fill="url(#depth)" opacity="0.15"/>
+
+  <!-- ピン（フラッグスティック） -->
+  <rect x="240" y="88" width="14" height="290" rx="7" fill="white"/>
+
+  <!-- フラッグ（幾何学的な三角形） -->
+  <path d="M254 96 L364 148 L254 200 Z" fill="white"/>
+
+  <!-- ホール周囲のサークル（グリーン面） -->
+  <ellipse cx="247" cy="390" rx="64" ry="16" fill="rgba(0,0,0,0.18)"/>
+
+  <defs>
+    <linearGradient id="depth" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="white"/>
+      <stop offset="100%" stop-color="black"/>
+    </linearGradient>
+  </defs>
 </svg>

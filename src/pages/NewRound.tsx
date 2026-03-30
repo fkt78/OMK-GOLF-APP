@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AlertTriangle, Lock, Sun, Cloud, CloudRain, Wind } from 'lucide-react'
 import { HoleData, Round } from '../types'
 import HoleInputRow from '../components/HoleInputRow'
 import { saveRound, generateId } from '../utils/storage'
@@ -27,9 +28,16 @@ interface Props {
   onSaved: () => void
 }
 
+const WEATHER_OPTIONS = [
+  { value: '晴れ', label: '晴れ', icon: Sun },
+  { value: '曇り', label: '曇り', icon: Cloud },
+  { value: '雨', label: '雨', icon: CloudRain },
+  { value: '風強', label: '風強', icon: Wind },
+]
+
 export default function NewRound({ onSaved }: Props) {
   const navigate = useNavigate()
-  const { user, canAddRound, isPremium, FREE_ROUND_LIMIT, profile } = useAuth()
+  const { user, canAddRound, FREE_ROUND_LIMIT } = useAuth()
 
   const [courseName, setCourseName] = useState('')
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
@@ -49,27 +57,28 @@ export default function NewRound({ onSaved }: Props) {
   const displayOffset = activeTab === 'front' ? 0 : 9
 
   const stats = calcRoundStats({ id: '', date, courseName, holes } as Round)
-
   const frontScore = holes.slice(0, 9).reduce((s, h) => s + h.score, 0)
   const backScore = holes.slice(9, 18).reduce((s, h) => s + h.score, 0)
   const frontPar = holes.slice(0, 9).reduce((s, h) => s + h.par, 0)
   const backPar = holes.slice(9, 18).reduce((s, h) => s + h.par, 0)
 
-  // 無料枠上限チェック
+  // 無料枠上限
   if (!canAddRound) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
-        <div className="text-5xl mb-4">🔒</div>
+        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+          <Lock size={28} className="text-gray-400" />
+        </div>
         <h2 className="text-xl font-bold text-gray-700 mb-2">無料プランの上限に達しました</h2>
         <p className="text-gray-500 text-sm text-center mb-6">
           無料プランは{FREE_ROUND_LIMIT}ラウンドまで保存できます。<br />
           プレミアムプランで無制限に記録できます。
         </p>
-        <button className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl font-bold text-base hover:bg-yellow-300 mb-3">
-          ⭐ プレミアムにアップグレード（¥300/月）
+        <button className="bg-golf-green text-white px-6 py-3 rounded-xl font-bold text-base hover:bg-golf-lightGreen mb-3">
+          プレミアムにアップグレード（¥300/月）
         </button>
         <button onClick={() => navigate('/')} className="text-gray-400 text-sm">
-          ← 戻る
+          戻る
         </button>
       </div>
     )
@@ -90,12 +99,9 @@ export default function NewRound({ onSaved }: Props) {
         notes,
         holes,
       }
-
       if (user) {
-        // Firestoreに保存
         await saveRoundToFirestore(user.uid, round)
       } else {
-        // 未ログイン時はlocalStorageに保存
         saveRound(round)
       }
       onSaved()
@@ -113,9 +119,13 @@ export default function NewRound({ onSaved }: Props) {
       {/* Header */}
       <div className="bg-golf-dark text-white p-4 sticky top-0 z-10">
         <div className="flex items-center justify-between max-w-2xl mx-auto">
-          <button onClick={() => navigate('/')} className="text-gray-300 hover:text-white">← 戻る</button>
+          <button onClick={() => navigate('/')} className="text-gray-300 hover:text-white text-sm">戻る</button>
           <h1 className="font-bold text-lg">新しいラウンド</h1>
-          <button onClick={handleSave} disabled={saving} className="bg-golf-fairway text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-golf-lightGreen disabled:opacity-50">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-golf-fairway text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-golf-lightGreen disabled:opacity-50"
+          >
             {saving ? '保存中...' : '保存'}
           </button>
         </div>
@@ -123,8 +133,9 @@ export default function NewRound({ onSaved }: Props) {
 
       {/* 未ログイン時の注意 */}
       {!user && (
-        <div className="bg-yellow-50 border-b border-yellow-100 px-4 py-2 text-xs text-yellow-700 text-center">
-          ⚠️ ログインしていません。データはこのデバイスにのみ保存されます。
+        <div className="bg-yellow-50 border-b border-yellow-100 px-4 py-2 flex items-center gap-2 text-xs text-yellow-700">
+          <AlertTriangle size={13} />
+          ログインしていません。データはこのデバイスにのみ保存されます。
         </div>
       )}
 
@@ -132,7 +143,7 @@ export default function NewRound({ onSaved }: Props) {
         {/* Course Info */}
         <div className="card space-y-3">
           <div>
-            <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">コース名 *</label>
+            <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">コース名</label>
             <input
               type="text"
               value={courseName}
@@ -153,17 +164,18 @@ export default function NewRound({ onSaved }: Props) {
             </div>
             <div>
               <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">天候</label>
-              <select
-                value={weather}
-                onChange={e => setWeather(e.target.value)}
-                className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
-              >
-                <option value="">選択</option>
-                <option value="晴れ">☀️ 晴れ</option>
-                <option value="曇り">☁️ 曇り</option>
-                <option value="雨">🌧️ 雨</option>
-                <option value="風強">💨 風強</option>
-              </select>
+              <div className="mt-1 grid grid-cols-4 gap-1">
+                {WEATHER_OPTIONS.map(({ value, label, icon: Icon }) => (
+                  <button
+                    key={value}
+                    onClick={() => setWeather(weather === value ? '' : value)}
+                    className={`flex flex-col items-center py-1.5 rounded-lg text-xs border transition-all ${weather === value ? 'bg-golf-green text-white border-golf-green' : 'bg-white text-gray-500 border-gray-200'}`}
+                  >
+                    <Icon size={14} />
+                    <span className="mt-0.5">{label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -199,11 +211,15 @@ export default function NewRound({ onSaved }: Props) {
           <button
             onClick={() => setActiveTab('front')}
             className={`flex-1 py-2 text-sm font-semibold transition-colors ${activeTab === 'front' ? 'bg-golf-green text-white' : 'bg-white text-gray-600'}`}
-          >前半 ({frontScore})</button>
+          >
+            前半 ({frontScore})
+          </button>
           <button
             onClick={() => setActiveTab('back')}
             className={`flex-1 py-2 text-sm font-semibold transition-colors ${activeTab === 'back' ? 'bg-golf-green text-white' : 'bg-white text-gray-600'}`}
-          >後半 ({backScore})</button>
+          >
+            後半 ({backScore})
+          </button>
         </div>
 
         {/* Hole inputs */}

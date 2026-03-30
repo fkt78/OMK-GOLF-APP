@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Crown, LogOut, ChevronDown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function AuthButton() {
@@ -11,6 +12,7 @@ export default function AuthButton() {
         onClick={signInWithGoogle}
         className="flex items-center gap-2 bg-white text-gray-700 px-3 py-1.5 rounded-lg text-sm font-semibold shadow hover:shadow-md transition-all"
       >
+        {/* Google "G" ロゴ */}
         <svg className="w-4 h-4" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -26,7 +28,8 @@ export default function AuthButton() {
     <div className="relative">
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className="flex items-center gap-2"
+        className="flex items-center gap-1.5"
+        aria-label="アカウントメニュー"
       >
         {user.photoURL ? (
           <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full border-2 border-golf-fairway" />
@@ -35,27 +38,42 @@ export default function AuthButton() {
             {user.displayName?.[0] ?? 'U'}
           </div>
         )}
-        <span className="text-xs text-gray-300 hidden sm:block">{user.displayName}</span>
+        <ChevronDown size={14} className="text-gray-300" />
       </button>
 
       {menuOpen && (
-        <div className="absolute right-0 top-10 bg-white rounded-xl shadow-lg border border-gray-100 p-3 w-52 z-20">
-          <div className="text-xs text-gray-500 mb-2">{user.email}</div>
-          <div className={`text-xs font-bold mb-3 px-2 py-1 rounded-full inline-block ${isPremium ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
-            {isPremium ? '⭐ プレミアム' : `無料 (${profile?.roundCount ?? 0}/${FREE_ROUND_LIMIT}ラウンド)`}
-          </div>
-          {!isPremium && (
-            <button className="w-full bg-golf-green text-white text-xs py-2 rounded-lg font-bold mb-2 hover:bg-golf-lightGreen">
-              プレミアムにアップグレード
+        <>
+          {/* オーバーレイ */}
+          <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+          <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 p-3 w-56 z-20">
+            <div className="text-xs text-gray-500 mb-1 truncate">{user.email}</div>
+            <div className="text-sm font-semibold text-gray-800 mb-3">{user.displayName}</div>
+
+            {isPremium ? (
+              <div className="flex items-center gap-1.5 text-xs font-bold text-yellow-700 bg-yellow-50 px-2 py-1.5 rounded-lg mb-3">
+                <Crown size={13} />
+                プレミアムプラン
+              </div>
+            ) : (
+              <>
+                <div className="text-xs text-gray-500 mb-2">
+                  無料プラン · {profile?.roundCount ?? 0}/{FREE_ROUND_LIMIT} ラウンド使用
+                </div>
+                <button className="w-full bg-golf-green text-white text-xs py-2 rounded-lg font-bold mb-2 hover:bg-golf-lightGreen">
+                  プレミアムにアップグレード
+                </button>
+              </>
+            )}
+
+            <button
+              onClick={() => { signOut(); setMenuOpen(false) }}
+              className="w-full flex items-center justify-center gap-1.5 text-gray-400 text-xs py-1.5 hover:text-gray-600"
+            >
+              <LogOut size={12} />
+              ログアウト
             </button>
-          )}
-          <button
-            onClick={() => { signOut(); setMenuOpen(false) }}
-            className="w-full text-gray-500 text-xs py-1.5 hover:text-gray-700"
-          >
-            ログアウト
-          </button>
-        </div>
+          </div>
+        </>
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Plus, ChevronRight, Search, TrendingUp } from 'lucide-react'
 import { Round } from '../types'
 import { calcRoundStats, calcCareerStats, getWeaknessAnalysis } from '../utils/stats'
 import StatCard from '../components/StatCard'
@@ -7,6 +8,7 @@ import ScoreTrend from '../components/ScoreTrend'
 import ScoreDistribution from '../components/ScoreDistribution'
 import RadarStats from '../components/RadarStats'
 import AuthButton from '../components/AuthButton'
+import GolfLogo from '../components/GolfLogo'
 import { useAuth } from '../contexts/AuthContext'
 
 interface Props {
@@ -15,7 +17,7 @@ interface Props {
   onRefresh: () => void
 }
 
-export default function Home({ rounds, loading, onRefresh }: Props) {
+export default function Home({ rounds, loading }: Props) {
   const navigate = useNavigate()
   const { user, isPremium, canAddRound, FREE_ROUND_LIMIT, profile } = useAuth()
   const stats = calcCareerStats(rounds)
@@ -28,12 +30,15 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
       {/* Header */}
       <div className="bg-golf-dark text-white p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">⛳ Golf Stats Pro</h1>
-            <p className="text-gray-400 text-xs mt-0.5">
-              プロ級スタッツで自分のゲームを分析
-              <span className="ml-2 text-gray-500">v{__APP_VERSION__}</span>
-            </p>
+          <div className="flex items-center gap-2.5">
+            <GolfLogo size={28} color="white" />
+            <div>
+              <h1 className="text-xl font-bold leading-tight">Golf Stats Pro</h1>
+              <p className="text-gray-400 text-xs">
+                プロ級スタッツで自分のゲームを分析
+                <span className="ml-2 text-gray-500">v{__APP_VERSION__}</span>
+              </p>
+            </div>
           </div>
           <AuthButton />
         </div>
@@ -62,7 +67,6 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
                 ¥300/月
               </button>
             </div>
-            {/* Progress bar */}
             <div className="mt-3 bg-gray-600 rounded-full h-1.5">
               <div
                 className="bg-yellow-400 h-1.5 rounded-full transition-all"
@@ -76,11 +80,16 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
           <div className="text-center py-12 text-gray-400">読み込み中...</div>
         ) : noRounds ? (
           <div className="card text-center py-12">
-            <div className="text-5xl mb-4">⛳</div>
+            <div className="flex justify-center mb-4">
+              <GolfLogo size={56} color="#1a5c38" />
+            </div>
             <h2 className="text-xl font-bold text-gray-700 mb-2">最初のラウンドを記録しよう</h2>
-            <p className="text-gray-400 text-sm mb-6">ホール毎にスコア・FW・GIR・パット数を入力するだけで<br />PGAツアー並みのスタッツを自動計算します</p>
+            <p className="text-gray-400 text-sm mb-6">
+              ホール毎にスコア・FW・GIR・パット数を入力するだけで<br />
+              PGAツアー並みのスタッツを自動計算します
+            </p>
             <button onClick={() => navigate('/new')} className="btn-primary px-8 py-3 text-base">
-              + 新しいラウンドを記録
+              新しいラウンドを記録
             </button>
           </div>
         ) : (
@@ -88,7 +97,10 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
             {/* キャリアスタッツ */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="font-bold text-gray-700">キャリアスタッツ</h2>
+                <h2 className="font-bold text-gray-700 flex items-center gap-1.5">
+                  <TrendingUp size={16} className="text-golf-green" />
+                  キャリアスタッツ
+                </h2>
                 <span className="text-xs text-gray-400">{stats.totalRounds}ラウンド</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -126,11 +138,14 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
 
             {/* 弱点分析 */}
             <div className="card border-l-4 border-golf-green">
-              <h3 className="font-bold text-gray-700 mb-2">🔍 弱点分析・改善提案</h3>
+              <h3 className="font-bold text-gray-700 mb-2 flex items-center gap-1.5">
+                <Search size={15} className="text-golf-green" />
+                弱点分析・改善提案
+              </h3>
               <ul className="space-y-2">
                 {insights.map((insight, i) => (
                   <li key={i} className="text-sm text-gray-600 flex gap-2">
-                    <span className="text-golf-green font-bold mt-0.5">→</span>
+                    <ChevronRight size={16} className="text-golf-green mt-0.5 shrink-0" />
                     <span>{insight}</span>
                   </li>
                 ))}
@@ -153,11 +168,14 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="font-semibold text-gray-800">{r.courseName}</div>
-                          <div className="text-xs text-gray-400 mt-0.5">{r.date} {r.weather && `• ${r.weather}`}</div>
+                          <div className="text-xs text-gray-400 mt-0.5">{r.date}{r.weather && ` · ${r.weather}`}</div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-golf-green">{s.totalScore}</div>
-                          <div className="text-xs text-gray-400">{s.scoreToPar >= 0 ? '+' : ''}{s.scoreToPar} (Par {totalPar})</div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-golf-green">{s.totalScore}</div>
+                            <div className="text-xs text-gray-400">{s.scoreToPar >= 0 ? '+' : ''}{s.scoreToPar} (Par {totalPar})</div>
+                          </div>
+                          <ChevronRight size={16} className="text-gray-300" />
                         </div>
                       </div>
                       <div className="flex gap-4 mt-2 text-xs text-gray-500">
@@ -179,14 +197,15 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
       {canAddRound ? (
         <button
           onClick={() => navigate('/new')}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-golf-green text-white text-2xl shadow-lg hover:bg-golf-lightGreen transition-colors flex items-center justify-center"
+          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-golf-green text-white shadow-lg hover:bg-golf-lightGreen transition-colors flex items-center justify-center"
+          aria-label="新しいラウンドを記録"
         >
-          +
+          <Plus size={24} />
         </button>
       ) : (
-        <div className="fixed bottom-6 right-6 bg-yellow-400 text-gray-900 px-4 py-3 rounded-full shadow-lg text-sm font-bold">
-          無料枠上限 → アップグレード
-        </div>
+        <button className="fixed bottom-6 right-6 bg-yellow-400 text-gray-900 px-4 py-3 rounded-full shadow-lg text-sm font-bold">
+          無料枠上限 — アップグレード
+        </button>
       )}
     </div>
   )

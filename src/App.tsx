@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import GolfLogo from './components/GolfLogo'
 import Home from './pages/Home'
 import NewRound from './pages/NewRound'
 import RoundDetail from './pages/RoundDetail'
@@ -40,8 +41,8 @@ function AppRoutes() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-golf-dark">
         <div className="text-white text-center">
-          <div className="text-4xl mb-3">⛳</div>
-          <div className="text-sm text-gray-400">読み込み中...</div>
+          <GolfLogo size={48} color="white" />
+          <div className="text-sm text-gray-400 mt-3">読み込み中...</div>
         </div>
       </div>
     )
