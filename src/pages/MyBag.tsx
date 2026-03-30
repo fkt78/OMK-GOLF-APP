@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
+import { FirebaseError } from 'firebase/app'
 import { Plus, Pencil, Trash2, Check } from 'lucide-react'
 import { Club, GearSet, ClubType, CLUB_TYPE_LABELS } from '../types'
 import { loadClubs, saveClub, updateClub, deleteClub, loadGearSets, saveGearSet, updateGearSet, deleteGearSet } from '../lib/firestore'
@@ -17,6 +18,22 @@ import {
 } from '../data/clubData'
 
 const CLUB_TYPE_ORDER: ClubType[] = ['driver', 'wood', 'utility', 'iron', 'wedge', 'putter', 'other']
+
+function clubSaveErrorMessage(err: unknown): string {
+  if (err instanceof FirebaseError) {
+    if (err.code === 'permission-denied') {
+      return '保存が拒否されました（権限がありません）。アプリ管理者が Firebase のセキュリティルールを公開用に更新する必要があります。'
+    }
+    if (err.code === 'failed-precondition') {
+      return 'データベースの準備が完了していません。数分待ってから再試行するか、管理者にインデックス作成を依頼してください。'
+    }
+    if (err.code === 'unavailable') {
+      return 'サーバーに接続できませんでした。通信状況を確認してから再試行してください。'
+    }
+    return `保存に失敗しました（${err.code}）。しばらくしてから再試行してください。`
+  }
+  return '保存に失敗しました。通信状況を確認するか、しばらくしてからもう一度お試しください。'
+}
 
 function roundLoftHalf(n: number): number {
   return Math.round(n * 2) / 2
@@ -356,7 +373,7 @@ export default function MyBag() {
       await refresh()
     } catch (err) {
       console.error(err)
-      setClubSaveError('保存に失敗しました。通信状況を確認するか、しばらくしてからもう一度お試しください。')
+      setClubSaveError(clubSaveErrorMessage(err))
     }
   }
 
