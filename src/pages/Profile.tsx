@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Save, ChevronRight } from 'lucide-react'
+import { Save } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { updateUserProfile } from '../lib/firestore'
 import { UserProfile } from '../types'
@@ -37,23 +37,31 @@ export default function Profile() {
     }
   }, [profile])
 
+  const [saveError, setSaveError] = useState<string | null>(null)
+
   const handleSave = async () => {
     if (!user) return
     setSaving(true)
-    const update: Partial<UserProfile> = {
-      averageScore: form.averageScore ? Number(form.averageScore) : undefined,
-      driverDistance: form.driverDistance ? Number(form.driverDistance) : undefined,
-      handicap: form.handicap ? Number(form.handicap) : undefined,
-      dominantHand: form.dominantHand,
-      homeCourse: form.homeCourse || undefined,
-      startedYear: form.startedYear ? Number(form.startedYear) : undefined,
-      targetScore: form.targetScore ? Number(form.targetScore) : undefined,
-      bio: form.bio || undefined,
+    setSaveError(null)
+    try {
+      const update: Partial<UserProfile> = {
+        averageScore: form.averageScore ? Number(form.averageScore) : undefined,
+        driverDistance: form.driverDistance ? Number(form.driverDistance) : undefined,
+        handicap: form.handicap ? Number(form.handicap) : undefined,
+        dominantHand: form.dominantHand,
+        homeCourse: form.homeCourse || undefined,
+        startedYear: form.startedYear ? Number(form.startedYear) : undefined,
+        targetScore: form.targetScore ? Number(form.targetScore) : undefined,
+        bio: form.bio || undefined,
+      }
+      await updateUserProfile(user.uid, update)
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch {
+      setSaveError('保存に失敗しました。もう一度お試しください。')
+    } finally {
+      setSaving(false)
     }
-    await updateUserProfile(user.uid, update)
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
   }
 
   const set = (key: string, value: string) => setForm(f => ({ ...f, [key]: value }))
@@ -173,6 +181,9 @@ export default function Profile() {
           </div>
         </div>
 
+        {saveError && (
+          <p className="text-red-500 text-sm text-center">{saveError}</p>
+        )}
         <button
           onClick={handleSave}
           disabled={saving}

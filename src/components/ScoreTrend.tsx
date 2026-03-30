@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine,
-  ResponsiveContainer, Legend
+  ResponsiveContainer
 } from 'recharts'
 import { Round } from '../types'
 import { calcRoundStats } from '../utils/stats'
@@ -29,6 +29,8 @@ export default function ScoreTrend({ rounds }: Props) {
 
   if (data.length === 0) return null
 
+  const avgPar = Math.round(data.reduce((sum, d) => sum + d.par, 0) / data.length)
+
   return (
     <div className="card">
       <h3 className="font-bold text-gray-700 mb-3">スコア推移（直近20ラウンド）</h3>
@@ -38,7 +40,7 @@ export default function ScoreTrend({ rounds }: Props) {
           <XAxis dataKey="date" tick={{ fontSize: 11 }} />
           <YAxis domain={['auto', 'auto']} tick={{ fontSize: 11 }} />
           <Tooltip />
-          <ReferenceLine y={data[0]?.par} stroke="#94a3b8" strokeDasharray="4 4" label={{ value: 'Par', position: 'right', fontSize: 11 }} />
+          <ReferenceLine y={avgPar} stroke="#94a3b8" strokeDasharray="4 4" label={{ value: 'Par', position: 'right', fontSize: 11 }} />
           <Line type="monotone" dataKey="score" stroke="#1a5c38" strokeWidth={2} dot={{ r: 3 }} name="スコア" />
         </LineChart>
       </ResponsiveContainer>

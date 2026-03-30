@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Plus, Pencil, Trash2, Check } from 'lucide-react'
 import { Club, GearSet, ClubType, CLUB_TYPE_LABELS, ShaftFlex } from '../types'
 import { loadClubs, saveClub, updateClub, deleteClub, loadGearSets, saveGearSet, updateGearSet, deleteGearSet } from '../lib/firestore'
@@ -16,7 +15,6 @@ function emptyClub(): Omit<Club, 'id' | 'userId' | 'createdAt'> {
 
 export default function MyBag() {
   const { user } = useAuth()
-  const navigate = useNavigate()
   const [clubs, setClubs] = useState<Club[]>([])
   const [gearSets, setGearSets] = useState<GearSet[]>([])
   const [tab, setTab] = useState<'clubs' | 'sets'>('clubs')
