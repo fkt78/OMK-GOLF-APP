@@ -7,17 +7,9 @@ import {
 } from 'firebase/auth'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { auth, db, googleProvider } from '../lib/firebase'
+import { UserProfile } from '../types'
 
 export type Plan = 'free' | 'premium'
-
-interface UserProfile {
-  uid: string
-  displayName: string | null
-  email: string | null
-  photoURL: string | null
-  plan: Plan
-  roundCount: number
-}
 
 interface AuthContextType {
   user: User | null

@@ -9,6 +9,7 @@ import ScoreDistribution from '../components/ScoreDistribution'
 import RadarStats from '../components/RadarStats'
 import AuthButton from '../components/AuthButton'
 import GolfLogo from '../components/GolfLogo'
+import BottomNav from '../components/BottomNav'
 import { useAuth } from '../contexts/AuthContext'
 
 interface Props {
@@ -192,6 +193,8 @@ export default function Home({ rounds, loading }: Props) {
           </>
         )}
       </div>
+
+      <BottomNav />
 
       {/* FAB */}
       {canAddRound ? (

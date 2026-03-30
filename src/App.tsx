@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import GolfLogo from './components/GolfLogo'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import NewRound from './pages/NewRound'
 import RoundDetail from './pages/RoundDetail'
+import MyBag from './pages/MyBag'
+import Profile from './pages/Profile'
 import UpdateNotification from './components/UpdateNotification'
+import GolfLogo from './components/GolfLogo'
 import { Round } from './types'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { loadRoundsFromFirestore } from './lib/firestore'
@@ -23,7 +25,6 @@ function AppRoutes() {
         .then(setRounds)
         .finally(() => setRoundsLoading(false))
     } else {
-      // 未ログイン時はlocalStorageから読む
       setRounds(loadRounds())
     }
   }, [user, loading])
@@ -50,9 +51,11 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home rounds={rounds} loading={roundsLoading} onRefresh={refreshRounds} />} />
-      <Route path="/new" element={<NewRound onSaved={refreshRounds} />} />
+      <Route path="/"          element={<Home rounds={rounds} loading={roundsLoading} onRefresh={refreshRounds} />} />
+      <Route path="/new"       element={<NewRound onSaved={refreshRounds} />} />
       <Route path="/round/:id" element={<RoundDetail rounds={rounds} onDeleted={refreshRounds} />} />
+      <Route path="/bag"       element={<MyBag />} />
+      <Route path="/profile"   element={<Profile />} />
     </Routes>
   )
 }
