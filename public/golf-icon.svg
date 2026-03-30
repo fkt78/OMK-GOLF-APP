@@ -1,22 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background: HIG準拠 - iOS がコーナーを丸める -->
-  <rect width="512" height="512" fill="#1a5c38"/>
-  <!-- 微細なグラデーションで奥行き -->
-  <rect width="512" height="512" fill="url(#depth)" opacity="0.15"/>
-
-  <!-- ピン（フラッグスティック） -->
-  <rect x="240" y="88" width="14" height="290" rx="7" fill="white"/>
-
-  <!-- フラッグ（幾何学的な三角形） -->
-  <path d="M254 96 L364 148 L254 200 Z" fill="white"/>
-
-  <!-- ホール周囲のサークル（グリーン面） -->
-  <ellipse cx="247" cy="390" rx="64" ry="16" fill="rgba(0,0,0,0.18)"/>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="depth" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="white"/>
-      <stop offset="100%" stop-color="black"/>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f3e21" />
+      <stop offset="100%" stop-color="#051f0e" />
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#facc15" />
     </linearGradient>
   </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <text x="256" y="340" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="280" fill="#ffffff" fill-opacity="0.06" text-anchor="middle" letter-spacing="-10">100</text>
+
+  <path d="M 80 80 L 80 432 L 432 432" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 80 314 L 410 314" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="6" stroke-dasharray="16,16" />
+  <path d="M 80 197 L 410 197" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="6" stroke-dasharray="16,16" />
+
+  <path d="M 80 380 C 180 380, 220 160, 360 140" fill="none" stroke="url(#lineGrad)" stroke-width="32" stroke-linecap="round" />
+
+  <circle cx="370" cy="135" r="48" fill="#ffffff" />
+  <circle cx="355" cy="120" r="6" fill="#e2e8f0" />
+  <circle cx="385" cy="125" r="7" fill="#e2e8f0" />
+  <circle cx="365" cy="150" r="8" fill="#e2e8f0" />
+  <circle cx="345" cy="140" r="5" fill="#e2e8f0" />
+  <circle cx="380" cy="145" r="6" fill="#e2e8f0" />
 </svg>

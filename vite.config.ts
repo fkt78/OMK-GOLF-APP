@@ -7,22 +7,34 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',          // 更新時にユーザーに確認プロンプトを表示
-      includeAssets: ['golf-icon.svg'],
+      includeAssets: ['golf-icon.svg', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Golf Stats Pro',
         short_name: 'GolfStats',
         description: 'プロ級スタッツでゴルフスコアを管理・分析',
-        theme_color: '#1a5c38',
-        background_color: '#f9fafb',
+        theme_color: '#0f3e21',
+        background_color: '#051f0e',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
         icons: [
           {
-            src: 'golf-icon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
+            src: 'icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },
