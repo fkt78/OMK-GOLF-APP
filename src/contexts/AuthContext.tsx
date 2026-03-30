@@ -17,6 +17,7 @@ interface AuthContextType {
   loading: boolean
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
   isPremium: boolean
   canAddRound: boolean
   FREE_ROUND_LIMIT: number
@@ -71,6 +72,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await firebaseSignOut(auth)
   }
 
+  async function refreshProfile() {
+    const u = auth.currentUser
+    if (!u) return
+    const ref = doc(db, 'users', u.uid)
+    const snap = await getDoc(ref)
+    if (snap.exists()) setProfile(snap.data() as UserProfile)
+  }
+
   const isPremium = profile?.plan === 'premium'
   const canAddRound = isPremium || (profile?.roundCount ?? 0) < FREE_ROUND_LIMIT
 
@@ -81,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       signInWithGoogle,
       signOut,
+      refreshProfile,
       isPremium,
       canAddRound,
       FREE_ROUND_LIMIT,

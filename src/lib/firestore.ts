@@ -15,6 +15,11 @@ import {
 import { db } from './firebase'
 import { Round, Club, GearSet, UserProfile } from '../types'
 
+/** Firestore はフィールド値に undefined を許可しない（書き込み時にエラーになる） */
+function omitUndefined<T extends Record<string, unknown>>(obj: T): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined))
+}
+
 // ─── ラウンド ─────────────────────────────────────
 export async function saveRoundToFirestore(userId: string, round: Round): Promise<string> {
   const ref = collection(db, 'rounds')
@@ -36,7 +41,11 @@ export async function deleteRoundFromFirestore(userId: string, roundId: string):
 
 // ─── プロフィール ─────────────────────────────────
 export async function updateUserProfile(userId: string, data: Partial<UserProfile>): Promise<void> {
-  await updateDoc(doc(db, 'users', userId), { ...data, updatedAt: serverTimestamp() })
+  const payload = omitUndefined({
+    ...data,
+    updatedAt: serverTimestamp(),
+  } as Record<string, unknown>)
+  await setDoc(doc(db, 'users', userId), payload, { merge: true })
 }
 
 // ─── クラブ ───────────────────────────────────────

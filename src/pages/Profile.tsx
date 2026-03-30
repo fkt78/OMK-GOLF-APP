@@ -7,7 +7,7 @@ import BottomNav from '../components/BottomNav'
 import AuthButton from '../components/AuthButton'
 
 export default function Profile() {
-  const { user, profile, signInWithGoogle } = useAuth()
+  const { user, profile, signInWithGoogle, refreshProfile } = useAuth()
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -55,6 +55,7 @@ export default function Profile() {
         bio: form.bio || undefined,
       }
       await updateUserProfile(user.uid, update)
+      await refreshProfile()
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch {
