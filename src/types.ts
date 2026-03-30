@@ -44,6 +44,8 @@ export interface Club {
   id: string
   userId: string
   type: ClubType
+  /** 種類の補足（チッパー・カスタム表記など） */
+  typeDetail?: string
   number: string       // '1W', '3W', '5I', 'SW', 'PT' など
   maker: string        // 'Callaway', 'TaylorMade', 'PING' など
   series: string       // 'Paradym', 'G430' など
@@ -51,6 +53,8 @@ export interface Club {
   shaft?: string       // シャフト名
   flex?: ShaftFlex     // シャフトフレックス
   loft?: number        // ロフト角
+  /** ヘッド調整・スリーブ（カチャカチャ）の設定メモ */
+  hoselSetting?: string
   notes?: string
   createdAt?: string
 }

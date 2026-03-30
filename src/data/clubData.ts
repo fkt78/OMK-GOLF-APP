@@ -1,15 +1,86 @@
 import { ClubType } from '../types'
 
+/** ドロップダウン末尾「その他（手入力）」用の値（保存時には使わない） */
+export const CUSTOM_INPUT_VALUE = '__CUSTOM_INPUT__'
+
 // ─── 番手/名称の選択肢（クラブタイプ別）───────────────────────
 export const CLUB_NUMBERS: Record<ClubType, string[]> = {
-  driver:  ['1W'],
-  wood:    ['2W', '3W', '4W', '5W', '6W', '7W', '9W', '10W'],
-  utility: ['U2', 'U3', 'U4', 'U5', 'U6', 'U7'],
-  iron:    ['1I', '2I', '3I', '4I', '5I', '6I', '7I', '8I', '9I'],
-  wedge:   ['PW', '46°', '48°', '50°(AW/GW)', '52°', '54°(SW)', '56°', '58°(LW)', '60°', '62°', '64°'],
-  putter:  ['PT(マレット)', 'PT(ブレード)', 'PT(ミッドマレット)', 'PT(フェースバランス)'],
-  other:   ['その他'],
+  driver:  ['1W', 'ミニドライバー', '高反発1W', '1.5W'],
+  wood:    ['2W', '3W', '4W', '5W', '6W', '7W', '8W', '9W', '10W', '11W', '13W'],
+  utility: ['U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7', 'U8', 'U9', 'UT', 'クロスオーバー'],
+  iron:    ['0I', '1I', '2I', '3I', '4I', '5I', '6I', '7I', '8I', '9I', '10I', 'コンボアイアン'],
+  wedge:   ['PW', 'AW', 'GW', 'SW', 'LW', '46°', '48°', '50°', '52°', '54°', '56°', '58°', '60°', '62°', '64°', '50°(AW/GW)', '54°(SW)', '58°(LW)', 'チッパー', '高ロフト'],
+  putter:  ['PT(マレット)', 'PT(ブレード)', 'PT(ミッドマレット)', 'PT(フェースバランス)', 'PT(センターシャフト)', 'PT(大型マレット)', 'ベントネック', 'パター'],
+  other:   ['カスタム', 'セット内表記'],
 }
+
+// ─── シャフト候補（代表的モデル。末尾で「その他」手入力可）──────────
+export const SHAFT_OPTIONS: string[] = [
+  // Fujikura
+  'Ventus TR Black', 'Ventus TR Blue', 'Ventus TR Red', 'Ventus Black', 'Ventus Blue', 'Ventus Red',
+  'Speeder NX', 'Speeder EVOLUTION VII', 'Speeder EVOLUTION VI', 'Speeder 661', 'Speeder 757',
+  'Air Speeder', 'Motore X', 'Pro 2.0',
+  // Mitsubishi Chemical
+  'Diamana PD', 'Diamana TB', 'Diamana GT', 'Diamana ZF', 'Diamana BF', 'Diamana D-Limited',
+  'TENSEI 1K Black', 'TENSEI 1K Blue', 'TENSEI 1K White', 'TENSEI AV Blue', 'TENSEI AV Raw White', 'TENSEI CK Pro Orange',
+  'Kai\'li White', 'Kai\'li Blue', 'Kai\'li Red',
+  'C6 Black', 'MMT', 'MMT Scorpion',
+  // Graphite Design
+  'Tour AD DI', 'Tour AD HD', 'Tour AD IZ', 'Tour AD UB', 'Tour AD XC', 'Tour AD VR', 'Tour AD TP',
+  // Project X
+  'HZRDUS Smoke Black', 'HZRDUS Smoke Green', 'HZRDUS Smoke Red', 'HZRDUS Gen 4', 'EvenFlow Riptide',
+  'Project X LS', 'Project X HZRDUS', 'Cypher', 'EvenFlow',
+  // Aldila
+  'Rogue Silver', 'Rogue Black', 'Rogue White', 'NV Green', 'NV Blue',
+  // Oban
+  'Kiyoshi', 'Kiyoshi HB', 'Kiyoshi Purple',
+  // Accra
+  'TZ RPG', 'TZ Six',
+  // Nippon (アイアン・ウェッジ系も含む)
+  'NS PRO 950GH neo', 'NS PRO MODUS³ Tour 105', 'NS PRO MODUS³ Tour 120', 'NS PRO MODUS³ Tour 130',
+  'NS PRO 850GH', 'NS PRO Zelos', 'NS PRO 1050GH',
+  // KBS
+  'KBS Tour', 'KBS Tour-V', 'KBS $-Taper', 'KBS PGI', 'KBS MAX',
+  // True Temper
+  'Dynamic Gold', 'Dynamic Gold 120', 'Dynamic Gold MID', 'Elevate 95', 'Elevate Tour', 'AMT Black', 'AMT Red',
+  // Shimada
+  'Shimada K\'s 8001', 'Shimada Tour',
+  // Aerotech
+  'SteelFiber i95', 'SteelFiber i110',
+  // LA Golf
+  'LA Golf A-Series', 'LA Golf TPZ',
+  // UST Mamiya
+  'Recoil ESX', 'Recoil Prototype', 'Helium',
+  // 汎用
+  '純正シャフト', 'オリジナルカスタム', '中古シャフト',
+]
+
+// ─── ヘッド調整・スリーブ（カチャカチャ）入力の候補（datalist 用）────
+export const HOSEL_PRESETS: string[] = [
+  '未設定・純正標準',
+  'ニュートラル(N) / 標準ロフト',
+  'ドロー(D) / ドロー寄り',
+  'フェード(F) / フェード寄り',
+  'ロフト：+1°（強ロフト）',
+  'ロフト：+0.5°',
+  'ロフト：-1°（弱ロフト）',
+  'ロフト：-2°',
+  'ライ角：アップライト',
+  'ライ角：フラット',
+  'フェース：オープン寄り',
+  'フェース：クローズ寄り',
+  'Callaway OptiFit：ドロー(D)',
+  'Callaway OptiFit：フェード(F)',
+  'Callaway OptiFit：ニュートラル(N)',
+  'TaylorMade：トラック ドロー側',
+  'TaylorMade：トラック フェード側',
+  'TaylorMade：トラック 中立',
+  'Titleist SureFit：チップ A1', 'Titleist SureFit：チップ B2', 'Titleist SureFit：チップ C3', 'Titleist SureFit：チップ D4',
+  'PING：ドロー設定', 'PING：フェード設定', 'PING：ストレート',
+  'Cobra MyFly：ロフト調整',
+  'ホーゼル：接着固定（調整なし）',
+  'その他（メモ欄に詳細記入）',
+]
 
 // ─── メーカー別シリーズデータ（2024-2025年現行モデル中心）──────
 export type MakerSeriesMap = {
