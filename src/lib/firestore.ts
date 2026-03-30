@@ -51,12 +51,21 @@ export async function updateUserProfile(userId: string, data: Partial<UserProfil
 // ─── クラブ ───────────────────────────────────────
 export async function saveClub(userId: string, club: Omit<Club, 'id' | 'userId' | 'createdAt'>): Promise<string> {
   const ref = collection(db, 'clubs')
-  const docRef = await addDoc(ref, { ...club, userId, createdAt: serverTimestamp() })
+  const payload = omitUndefined({
+    ...club,
+    userId,
+    createdAt: serverTimestamp(),
+  } as Record<string, unknown>)
+  const docRef = await addDoc(ref, payload)
   return docRef.id
 }
 
 export async function updateClub(clubId: string, data: Partial<Club>): Promise<void> {
-  await updateDoc(doc(db, 'clubs', clubId), { ...data, updatedAt: serverTimestamp() })
+  const payload = omitUndefined({
+    ...data,
+    updatedAt: serverTimestamp(),
+  } as Record<string, unknown>)
+  await updateDoc(doc(db, 'clubs', clubId), payload)
 }
 
 export async function deleteClub(clubId: string): Promise<void> {
@@ -72,12 +81,21 @@ export async function loadClubs(userId: string): Promise<Club[]> {
 // ─── ギアセット ───────────────────────────────────
 export async function saveGearSet(userId: string, set: Omit<GearSet, 'id' | 'userId' | 'createdAt'>): Promise<string> {
   const ref = collection(db, 'gearSets')
-  const docRef = await addDoc(ref, { ...set, userId, createdAt: serverTimestamp() })
+  const payload = omitUndefined({
+    ...set,
+    userId,
+    createdAt: serverTimestamp(),
+  } as Record<string, unknown>)
+  const docRef = await addDoc(ref, payload)
   return docRef.id
 }
 
 export async function updateGearSet(setId: string, data: Partial<GearSet>): Promise<void> {
-  await updateDoc(doc(db, 'gearSets', setId), { ...data, updatedAt: serverTimestamp() })
+  const payload = omitUndefined({
+    ...data,
+    updatedAt: serverTimestamp(),
+  } as Record<string, unknown>)
+  await updateDoc(doc(db, 'gearSets', setId), payload)
 }
 
 export async function deleteGearSet(setId: string): Promise<void> {

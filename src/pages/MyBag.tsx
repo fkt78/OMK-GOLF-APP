@@ -325,6 +325,7 @@ export default function MyBag() {
   const [setName, setSetName] = useState('')
   const [selectedClubIds, setSelectedClubIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const [clubSaveError, setClubSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
@@ -342,13 +343,21 @@ export default function MyBag() {
   // ─── クラブ操作 ───────────────────────────────
   const handleSaveClub = async () => {
     if (!user || !clubForm.maker.trim()) return
-    if (editingClub) {
-      await updateClub(editingClub.id, clubForm)
-    } else {
-      await saveClub(user.uid, clubForm)
+    setClubSaveError(null)
+    try {
+      if (editingClub) {
+        await updateClub(editingClub.id, clubForm)
+      } else {
+        await saveClub(user.uid, clubForm)
+      }
+      setEditingClub(null)
+      setAddingClub(false)
+      setClubForm(emptyClub())
+      await refresh()
+    } catch (err) {
+      console.error(err)
+      setClubSaveError('保存に失敗しました。通信状況を確認するか、しばらくしてからもう一度お試しください。')
     }
-    setEditingClub(null); setAddingClub(false); setClubForm(emptyClub())
-    await refresh()
   }
 
   const handleDeleteClub = async (club: Club) => {
@@ -432,7 +441,7 @@ export default function MyBag() {
             ) : clubs.length === 0 ? (
               <div className="card text-center py-10">
                 <p className="text-gray-500 mb-4">まだクラブが登録されていません</p>
-                <button onClick={() => { setAddingClub(true); setClubForm(emptyClub()) }} className="btn-primary px-6 py-2">
+                <button onClick={() => { setClubSaveError(null); setAddingClub(true); setClubForm(emptyClub()) }} className="btn-primary px-6 py-2">
                   最初のクラブを追加
                 </button>
               </div>
@@ -464,7 +473,7 @@ export default function MyBag() {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => { setEditingClub(club); setClubForm({ type: club.type, typeDetail: club.typeDetail ?? '', number: club.number, maker: club.maker, series: club.series, nickname: club.nickname, shaft: club.shaft ?? '', shaftWeight: club.shaftWeight ?? '', flex: club.flex ?? '', loft: club.loft, balance: club.balance ?? '', hoselSetting: club.hoselSetting ?? '', notes: club.notes ?? '' }); setAddingClub(false) }} className="p-1.5 text-gray-400 hover:text-golf-green">
+                          <button onClick={() => { setClubSaveError(null); setEditingClub(club); setClubForm({ type: club.type, typeDetail: club.typeDetail ?? '', number: club.number, maker: club.maker, series: club.series, nickname: club.nickname, shaft: club.shaft ?? '', shaftWeight: club.shaftWeight ?? '', flex: club.flex ?? '', loft: club.loft, balance: club.balance ?? '', hoselSetting: club.hoselSetting ?? '', notes: club.notes ?? '' }); setAddingClub(false) }} className="p-1.5 text-gray-400 hover:text-golf-green">
                             <Pencil size={15} />
                           </button>
                           <button onClick={() => handleDeleteClub(club)} className="p-1.5 text-gray-400 hover:text-red-500">
@@ -479,7 +488,7 @@ export default function MyBag() {
             )}
 
             <button
-              onClick={() => { setAddingClub(true); setEditingClub(null); setClubForm(emptyClub()) }}
+              onClick={() => { setClubSaveError(null); setAddingClub(true); setEditingClub(null); setClubForm(emptyClub()) }}
               className="btn-primary w-full py-3 flex items-center justify-center gap-2"
             >
               <Plus size={16} /> クラブを追加
@@ -550,9 +559,15 @@ export default function MyBag() {
               clubForm={clubForm}
               setClubForm={setClubForm}
             />
+            {!clubForm.maker.trim() && (
+              <p className="text-xs text-amber-700 mt-2">メーカーを選択するか、「その他（手入力）」で入力してください。</p>
+            )}
+            {clubSaveError && (
+              <p className="text-sm text-red-600 mt-3 text-center">{clubSaveError}</p>
+            )}
             <div className="flex gap-3 mt-4">
-              <button onClick={() => { setEditingClub(null); setAddingClub(false) }} className="flex-1 btn-secondary py-3">キャンセル</button>
-              <button onClick={handleSaveClub} disabled={!clubForm.maker.trim()} className="flex-1 btn-primary py-3">保存</button>
+              <button type="button" onClick={() => { setClubSaveError(null); setEditingClub(null); setAddingClub(false) }} className="flex-1 btn-secondary py-3">キャンセル</button>
+              <button type="button" onClick={handleSaveClub} disabled={!clubForm.maker.trim()} className="flex-1 btn-primary py-3">保存</button>
             </div>
           </div>
         </div>
