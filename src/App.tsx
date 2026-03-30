@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import NewRound from './pages/NewRound'
 import RoundDetail from './pages/RoundDetail'
+import UpdateNotification from './components/UpdateNotification'
 import { Round } from './types'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { loadRoundsFromFirestore } from './lib/firestore'
@@ -59,6 +60,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <UpdateNotification />
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

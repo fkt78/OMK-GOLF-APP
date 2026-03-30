@@ -30,7 +30,10 @@ export default function Home({ rounds, loading, onRefresh }: Props) {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold">⛳ Golf Stats Pro</h1>
-            <p className="text-gray-400 text-xs mt-0.5">プロ級スタッツで自分のゲームを分析</p>
+            <p className="text-gray-400 text-xs mt-0.5">
+              プロ級スタッツで自分のゲームを分析
+              <span className="ml-2 text-gray-500">v{__APP_VERSION__}</span>
+            </p>
           </div>
           <AuthButton />
         </div>

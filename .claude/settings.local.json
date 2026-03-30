@@ -4,7 +4,12 @@
       "Bash(npm create:*)",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(firebase --version)",
+      "Bash(firebase projects:list)",
+      "Bash(firebase deploy:*)",
+      "Bash(firebase login:list)",
+      "Bash(npm version:*)"
     ]
   }
 }
