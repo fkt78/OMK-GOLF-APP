@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { Plus, Pencil, Trash2, Check } from 'lucide-react'
-import { Club, GearSet, ClubType, CLUB_TYPE_LABELS, ShaftFlex } from '../types'
+import { Club, GearSet, ClubType, CLUB_TYPE_LABELS } from '../types'
 import { loadClubs, saveClub, updateClub, deleteClub, loadGearSets, saveGearSet, updateGearSet, deleteGearSet } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
 import BottomNav from '../components/BottomNav'
@@ -11,10 +11,16 @@ import {
   CUSTOM_INPUT_VALUE,
   SHAFT_OPTIONS,
   HOSEL_PRESETS,
+  FLEX_PRESET_OPTIONS,
+  SHAFT_WEIGHT_PRESETS,
+  BALANCE_PRESETS,
 } from '../data/clubData'
 
 const CLUB_TYPE_ORDER: ClubType[] = ['driver', 'wood', 'utility', 'iron', 'wedge', 'putter', 'other']
-const FLEX_OPTIONS: ShaftFlex[] = ['X', 'S', 'SR', 'R', 'A', 'L', '']
+
+function roundLoftHalf(n: number): number {
+  return Math.round(n * 2) / 2
+}
 
 /** メーカー一覧（「その他」は手入力にまとめる） */
 const MAKER_DROPDOWN = MAKER_NAMES.filter(m => m !== 'その他')
@@ -28,8 +34,10 @@ function emptyClub(): Omit<Club, 'id' | 'userId' | 'createdAt'> {
     series: '',
     nickname: '',
     shaft: '',
+    shaftWeight: '',
     flex: '',
     loft: undefined,
+    balance: '',
     hoselSetting: '',
     notes: '',
   }
@@ -57,6 +65,9 @@ function ClubFormFields({
 
   const shaftSelectVal = !clubForm.shaft ? '' : (SHAFT_OPTIONS.includes(clubForm.shaft) ? clubForm.shaft : CUSTOM_INPUT_VALUE)
   const showShaftCustom = shaftSelectVal === CUSTOM_INPUT_VALUE || (!!clubForm.shaft && !SHAFT_OPTIONS.includes(clubForm.shaft))
+
+  const flexSelectVal = !clubForm.flex ? '' : (FLEX_PRESET_OPTIONS.includes(clubForm.flex) ? clubForm.flex : CUSTOM_INPUT_VALUE)
+  const showFlexCustom = flexSelectVal === CUSTOM_INPUT_VALUE || (!!clubForm.flex && !FLEX_PRESET_OPTIONS.includes(clubForm.flex))
 
   return (
     <div className="space-y-3">
@@ -195,16 +206,88 @@ function ClubFormFields({
           />
         )}
       </div>
+      <div>
+        <label className="text-xs text-gray-500">シャフト重量</label>
+        <input
+          value={clubForm.shaftWeight ?? ''}
+          onChange={e => setClubForm(f => ({ ...f, shaftWeight: e.target.value }))}
+          list="shaft-weight-presets"
+          placeholder="例: 50g, 40g, Sシャフト 50g など"
+          className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+        />
+        <datalist id="shaft-weight-presets">
+          {SHAFT_WEIGHT_PRESETS.map(w => <option key={w} value={w} />)}
+        </datalist>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500">フレックス</label>
+        <select
+          value={flexSelectVal}
+          onChange={e => {
+            const v = e.target.value
+            if (v === '') setClubForm(f => ({ ...f, flex: '' }))
+            else if (v === CUSTOM_INPUT_VALUE) setClubForm(f => ({ ...f, flex: '' }))
+            else setClubForm(f => ({ ...f, flex: v }))
+          }}
+          className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+        >
+          <option value="">未設定</option>
+          {FLEX_PRESET_OPTIONS.map(fl => <option key={fl} value={fl}>{fl}</option>)}
+          <option value={CUSTOM_INPUT_VALUE}>その他（手入力）</option>
+        </select>
+        {showFlexCustom && (
+          <input
+            value={clubForm.flex}
+            onChange={e => setClubForm(f => ({ ...f, flex: e.target.value }))}
+            placeholder="例: XX、Tour XX、7.2、カスタム表記"
+            className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+          />
+        )}
+        <p className="text-xs text-gray-400 mt-1">X より硬い XX / Tour X、数値フレックス（6.5 等）はプリセットまたは手入力で。</p>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs text-gray-500">フレックス</label>
-          <select value={clubForm.flex} onChange={e => setClubForm(f => ({ ...f, flex: e.target.value as ShaftFlex }))} className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
-            {FLEX_OPTIONS.map(f => <option key={f} value={f}>{f || '−'}</option>)}
-          </select>
+          <label className="text-xs text-gray-500">ロフト (°) ※0.5°刻み</label>
+          <input
+            type="number"
+            step={0.5}
+            min={4}
+            max={68}
+            value={clubForm.loft === undefined ? '' : clubForm.loft}
+            onChange={e => {
+              const v = e.target.value
+              if (v === '') {
+                setClubForm(f => ({ ...f, loft: undefined }))
+                return
+              }
+              const n = parseFloat(v)
+              if (Number.isNaN(n)) return
+              setClubForm(f => ({ ...f, loft: roundLoftHalf(n) }))
+            }}
+            onBlur={e => {
+              const v = e.target.value
+              if (v === '') return
+              const n = parseFloat(v)
+              if (Number.isNaN(n)) return
+              const r = roundLoftHalf(n)
+              if (r !== clubForm.loft) setClubForm(f => ({ ...f, loft: r }))
+            }}
+            placeholder="10.5"
+            className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+          />
         </div>
         <div>
-          <label className="text-xs text-gray-500">ロフト(°)</label>
-          <input type="number" value={clubForm.loft ?? ''} onChange={e => setClubForm(f => ({ ...f, loft: e.target.value ? Number(e.target.value) : undefined }))} placeholder="10.5" className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green" />
+          <label className="text-xs text-gray-500">バランス（スイングウェイト）</label>
+          <input
+            value={clubForm.balance ?? ''}
+            onChange={e => setClubForm(f => ({ ...f, balance: e.target.value }))}
+            list="balance-presets"
+            placeholder="例: D0, C9"
+            className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+          />
+          <datalist id="balance-presets">
+            {BALANCE_PRESETS.map(b => <option key={b} value={b} />)}
+          </datalist>
         </div>
       </div>
       <div>
@@ -375,11 +458,13 @@ export default function MyBag() {
                             )}
                             {club.typeDetail && <div className="text-xs text-amber-700">種類メモ: {club.typeDetail}</div>}
                             {club.flex && <div className="text-xs text-gray-400">フレックス: {club.flex}</div>}
+                            {club.shaftWeight && <div className="text-xs text-gray-400">重量: {club.shaftWeight}</div>}
+                            {club.balance && <div className="text-xs text-gray-400">バランス: {club.balance}</div>}
                             {club.hoselSetting && <div className="text-xs text-gray-500">調整: {club.hoselSetting}</div>}
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => { setEditingClub(club); setClubForm({ type: club.type, typeDetail: club.typeDetail ?? '', number: club.number, maker: club.maker, series: club.series, nickname: club.nickname, shaft: club.shaft ?? '', flex: club.flex ?? '', loft: club.loft, hoselSetting: club.hoselSetting ?? '', notes: club.notes ?? '' }); setAddingClub(false) }} className="p-1.5 text-gray-400 hover:text-golf-green">
+                          <button onClick={() => { setEditingClub(club); setClubForm({ type: club.type, typeDetail: club.typeDetail ?? '', number: club.number, maker: club.maker, series: club.series, nickname: club.nickname, shaft: club.shaft ?? '', shaftWeight: club.shaftWeight ?? '', flex: club.flex ?? '', loft: club.loft, balance: club.balance ?? '', hoselSetting: club.hoselSetting ?? '', notes: club.notes ?? '' }); setAddingClub(false) }} className="p-1.5 text-gray-400 hover:text-golf-green">
                             <Pencil size={15} />
                           </button>
                           <button onClick={() => handleDeleteClub(club)} className="p-1.5 text-gray-400 hover:text-red-500">

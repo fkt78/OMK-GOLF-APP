@@ -82,6 +82,28 @@ export const HOSEL_PRESETS: string[] = [
   'その他（メモ欄に詳細記入）',
 ]
 
+/** フレックスのプリセット（X より硬い表記・数値フレックスも含む） */
+export const FLEX_PRESET_OPTIONS: string[] = [
+  'X', 'XX', 'Tour X', 'TX', 'Tour Issue X',
+  'S', 'SR', 'R', 'A', 'L',
+  '5.5', '6.0', '6.5', '7.0', '7.5', '8.0',
+]
+
+/** シャフト重量の候補（datalist 用・g 表記） */
+export const SHAFT_WEIGHT_PRESETS: string[] = [
+  '40g', '45g', '50g', '55g', '60g', '65g', '70g', '75g', '80g', '85g', '90g', '95g',
+  '100g', '105g', '110g', '115g', '120g', '125g', '130g', '135g',
+]
+
+/** スイングバランス・クラブバランスの候補 */
+export const BALANCE_PRESETS: string[] = [
+  'D0', 'D0.5', 'D1', 'D1.5', 'D2', 'D2.5', 'D3', 'D3.5', 'D4', 'D5',
+  'C6', 'C7', 'C7.5', 'C8', 'C8.5', 'C9', 'C9.5',
+  'E0', 'E0.5', 'E1', 'E1.5', 'E2',
+  'F0',
+  'バランス調整なし',
+]
+
 // ─── メーカー別シリーズデータ（2024-2025年現行モデル中心）──────
 export type MakerSeriesMap = {
   driver?: string[]

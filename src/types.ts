@@ -38,6 +38,7 @@ export const CLUB_TYPE_LABELS: Record<ClubType, string> = {
   other:   'その他',
 }
 
+/** レガシー互換用（フレックスは文字列で自由入力） */
 export type ShaftFlex = 'X' | 'S' | 'SR' | 'R' | 'A' | 'L' | ''
 
 export interface Club {
@@ -51,8 +52,13 @@ export interface Club {
   series: string       // 'Paradym', 'G430' など
   nickname: string     // ユーザーが付けたニックネーム
   shaft?: string       // シャフト名
-  flex?: ShaftFlex     // シャフトフレックス
-  loft?: number        // ロフト角
+  /** シャフト重量（例: 50g, 40g, S 50g） */
+  shaftWeight?: string
+  /** フレックス（X/XX/Tour X/6.5 など自由表記） */
+  flex?: string
+  loft?: number        // ロフト角（°）0.5 刻み想定
+  /** スイングバランス・バランス（例: D0, D1, C9） */
+  balance?: string
   /** ヘッド調整・スリーブ（カチャカチャ）の設定メモ */
   hoselSetting?: string
   notes?: string
