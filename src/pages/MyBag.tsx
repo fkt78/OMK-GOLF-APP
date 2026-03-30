@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Pencil, Trash2, Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, Check } from 'lucide-react'
 import { Club, GearSet, ClubType, CLUB_TYPE_LABELS, ShaftFlex } from '../types'
 import { loadClubs, saveClub, updateClub, deleteClub, loadGearSets, saveGearSet, updateGearSet, deleteGearSet } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
 import BottomNav from '../components/BottomNav'
+import { CLUB_NUMBERS, MAKER_NAMES, getSeriesOptions } from '../data/clubData'
 
 const CLUB_TYPE_ORDER: ClubType[] = ['driver', 'wood', 'utility', 'iron', 'wedge', 'putter', 'other']
 const FLEX_OPTIONS: ShaftFlex[] = ['X', 'S', 'SR', 'R', 'A', 'L', '']
-const MAKERS = ['Callaway', 'TaylorMade', 'PING', 'Titleist', 'Cleveland', 'Mizuno', 'Srixon', 'Honma', 'Yonex', 'Bridgestone', 'Cobra', 'その他']
 
 function emptyClub(): Omit<Club, 'id' | 'userId' | 'createdAt'> {
   return { type: 'driver', number: '1W', maker: '', series: '', nickname: '', shaft: '', flex: '', loft: undefined, notes: '' }
@@ -249,23 +249,59 @@ export default function MyBag() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-gray-500">種類</label>
-                  <select value={clubForm.type} onChange={e => setClubForm(f => ({ ...f, type: e.target.value as ClubType }))} className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                  <select
+                    value={clubForm.type}
+                    onChange={e => {
+                      const newType = e.target.value as ClubType
+                      const firstNum = CLUB_NUMBERS[newType]?.[0] ?? ''
+                      setClubForm(f => ({ ...f, type: newType, number: firstNum, series: '' }))
+                    }}
+                    className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
                     {CLUB_TYPE_ORDER.map(t => <option key={t} value={t}>{CLUB_TYPE_LABELS[t]}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs text-gray-500">番手/名称</label>
-                  <input value={clubForm.number} onChange={e => setClubForm(f => ({ ...f, number: e.target.value }))} placeholder="1W, 7I, SW..." className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green" />
+                  <select
+                    value={clubForm.number}
+                    onChange={e => setClubForm(f => ({ ...f, number: e.target.value }))}
+                    className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
+                    {(CLUB_NUMBERS[clubForm.type] ?? []).map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
                 </div>
               </div>
               <div>
                 <label className="text-xs text-gray-500">メーカー</label>
-                <input list="makers" value={clubForm.maker} onChange={e => setClubForm(f => ({ ...f, maker: e.target.value }))} placeholder="Callaway, TaylorMade..." className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green" />
-                <datalist id="makers">{MAKERS.map(m => <option key={m} value={m} />)}</datalist>
+                <select
+                  value={clubForm.maker}
+                  onChange={e => setClubForm(f => ({ ...f, maker: e.target.value, series: '' }))}
+                  className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">選択してください</option>
+                  {MAKER_NAMES.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
               </div>
               <div>
                 <label className="text-xs text-gray-500">シリーズ/モデル</label>
-                <input value={clubForm.series} onChange={e => setClubForm(f => ({ ...f, series: e.target.value }))} placeholder="Paradym, G430..." className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green" />
+                {getSeriesOptions(clubForm.maker, clubForm.type).length > 0 ? (
+                  <select
+                    value={clubForm.series}
+                    onChange={e => setClubForm(f => ({ ...f, series: e.target.value }))}
+                    className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                  >
+                    <option value="">選択してください</option>
+                    {getSeriesOptions(clubForm.maker, clubForm.type).map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    value={clubForm.series}
+                    onChange={e => setClubForm(f => ({ ...f, series: e.target.value }))}
+                    placeholder="モデル名を入力..."
+                    className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+                  />
+                )}
               </div>
               <div>
                 <label className="text-xs text-gray-500">ニックネーム（任意）</label>
