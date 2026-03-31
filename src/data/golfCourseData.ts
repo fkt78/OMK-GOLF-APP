@@ -875,6 +875,7 @@ export const GOLF_COURSE_DB: Record<RegionName, Record<PrefectureName, CourseLea
       '伊勢ゴルフ倶楽部',
       '伊勢志摩カントリー倶楽部',
       '伊賀カントリー倶楽部',
+      'ジャパンクラシックカントリークラブ',
       '亀山カントリー倶楽部',
       '亀山ゴルフ倶楽部',
       '鈴鹿カントリー倶楽部',

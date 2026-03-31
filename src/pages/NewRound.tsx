@@ -16,6 +16,7 @@ import {
   labelCourseLeaf,
   formatCourseWithLayout,
 } from '../data/golfCourseData'
+import GoogleGolfPlaceAutocomplete, { hasGoogleMapsPlacesKey } from '../components/GoogleGolfPlaceAutocomplete'
 
 const RECENT_COURSES_KEY = 'golf_recent_courses'
 const RECENT_COURSES_MAX = 5
@@ -211,6 +212,21 @@ export default function NewRound({ onSaved }: Props) {
                   </button>
                 ) : (
                   <div>
+                    {hasGoogleMapsPlacesKey() && (
+                      <div className="mb-3">
+                        <p className="text-xs text-gray-500 mb-1.5">
+                          Googleマップと同じ候補（推奨・APIキー設定時）
+                        </p>
+                        <GoogleGolfPlaceAutocomplete
+                          onSelect={name => {
+                            setCourseName(name)
+                            setShowSearch(false)
+                            setSearchQuery('')
+                          }}
+                        />
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-400 mb-1">アプリ内の一覧</p>
                     <div className="relative">
                       <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                       <input
@@ -218,7 +234,7 @@ export default function NewRound({ onSaved }: Props) {
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         placeholder="コース名・都道府県名で絞り込み..."
-                        autoFocus
+                        autoFocus={!hasGoogleMapsPlacesKey()}
                         className="w-full border border-golf-green rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none"
                       />
                     </div>
@@ -227,9 +243,9 @@ export default function NewRound({ onSaved }: Props) {
                         {searchResults.length === 0 ? (
                           <p className="text-xs text-gray-400 p-3 text-center">一致するコースが見つかりません</p>
                         ) : (
-                          searchResults.map(r => (
+                          searchResults.map((r, i) => (
                             <button
-                              key={r.courseName}
+                              key={`${r.courseName}-${r.prefecture}-${i}`}
                               type="button"
                               onClick={() => { setCourseName(r.courseName); setShowSearch(false); setSearchQuery('') }}
                               className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-gray-50 border-b border-gray-50 last:border-0"

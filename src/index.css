@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Google Places 候補ドロップダウン（ヘッダーより前面） */
+.pac-container {
+  z-index: 10050 !important;
+}
+
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900 min-h-screen;
