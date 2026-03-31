@@ -66,7 +66,6 @@ export default function NewRound({ onSaved }: Props) {
   const [coursePickerStep, setCoursePickerStep] = useState<'region' | 'pref' | 'course' | 'subcourse' | 'manual' | null>(null)
   const [pendingMultiFacility, setPendingMultiFacility] = useState<{ facility: string; layouts: string[] } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [showSearch, setShowSearch] = useState(false)
   const [recentCourses] = useState<string[]>(loadRecentCourses)
   const searchResults = useMemo(() => searchCourses(searchQuery), [searchQuery])
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
@@ -177,7 +176,7 @@ export default function NewRound({ onSaved }: Props) {
             <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">コース名</label>
 
             {/* ─── 最近使ったコース ─── */}
-            {!courseName && recentCourses.length > 0 && !showSearch && coursePickerStep === null && (
+            {!courseName && recentCourses.length > 0 && coursePickerStep === null && (
               <div className="mt-2">
                 <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1.5">
                   <Clock size={11} />
@@ -198,66 +197,56 @@ export default function NewRound({ onSaved }: Props) {
               </div>
             )}
 
-            {/* ─── インクリメンタルサーチ ─── */}
+            {/* ─── コース名検索（常に入力可。以前は「コース名で検索」クリック後のみ表示で入力できないように見えていた） ─── */}
             {!courseName && (
-              <div className="mt-2">
-                {!showSearch ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowSearch(true)}
-                    className="flex items-center gap-1.5 text-xs text-golf-green hover:underline"
-                  >
-                    <Search size={12} />
-                    コース名で検索
-                  </button>
-                ) : (
-                  <div>
-                    {hasGoogleMapsPlacesKey() && (
-                      <div className="mb-3">
-                        <p className="text-xs text-gray-500 mb-1.5">
-                          Googleマップと同じ候補（推奨・APIキー設定時）
-                        </p>
-                        <GoogleGolfPlaceAutocomplete
-                          onSelect={name => {
-                            setCourseName(name)
-                            setShowSearch(false)
-                            setSearchQuery('')
-                          }}
-                        />
-                      </div>
+              <div className="mt-2 relative z-20">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1.5">
+                  <Search size={12} className="text-golf-green" />
+                  コース名で検索
+                </div>
+                {hasGoogleMapsPlacesKey() && (
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-500 mb-1.5">
+                      Googleマップと同じ候補（APIキー設定時）
+                    </p>
+                    <GoogleGolfPlaceAutocomplete
+                      onSelect={name => {
+                        setCourseName(name)
+                        setSearchQuery('')
+                      }}
+                    />
+                  </div>
+                )}
+                <p className="text-xs text-gray-400 mb-1">アプリ内の一覧</p>
+                <div className="relative">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  <input
+                    type="search"
+                    enterKeyHint="search"
+                    inputMode="search"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder="コース名・都道府県名で絞り込み..."
+                    className="w-full border border-golf-green rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-golf-green bg-white"
+                  />
+                </div>
+                {searchQuery.length >= 1 && (
+                  <div className="mt-1 max-h-48 overflow-y-auto border border-gray-100 rounded-xl bg-white shadow-sm">
+                    {searchResults.length === 0 ? (
+                      <p className="text-xs text-gray-400 p-3 text-center">一致するコースが見つかりません</p>
+                    ) : (
+                      searchResults.map((r, i) => (
+                        <button
+                          key={`${r.courseName}-${r.prefecture}-${i}`}
+                          type="button"
+                          onClick={() => { setCourseName(r.courseName); setSearchQuery('') }}
+                          className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-gray-50 border-b border-gray-50 last:border-0"
+                        >
+                          <span className="text-sm text-gray-800 text-left">{r.courseName}</span>
+                          <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{r.prefecture}</span>
+                        </button>
+                      ))
                     )}
-                    <p className="text-xs text-gray-400 mb-1">アプリ内の一覧</p>
-                    <div className="relative">
-                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        placeholder="コース名・都道府県名で絞り込み..."
-                        autoFocus={!hasGoogleMapsPlacesKey()}
-                        className="w-full border border-golf-green rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none"
-                      />
-                    </div>
-                    {searchQuery.length >= 1 && (
-                      <div className="mt-1 max-h-48 overflow-y-auto border border-gray-100 rounded-xl bg-white">
-                        {searchResults.length === 0 ? (
-                          <p className="text-xs text-gray-400 p-3 text-center">一致するコースが見つかりません</p>
-                        ) : (
-                          searchResults.map((r, i) => (
-                            <button
-                              key={`${r.courseName}-${r.prefecture}-${i}`}
-                              type="button"
-                              onClick={() => { setCourseName(r.courseName); setShowSearch(false); setSearchQuery('') }}
-                              className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-gray-50 border-b border-gray-50 last:border-0"
-                            >
-                              <span className="text-sm text-gray-800 text-left">{r.courseName}</span>
-                              <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{r.prefecture}</span>
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    )}
-                    <button type="button" onClick={() => { setShowSearch(false); setSearchQuery('') }} className="mt-1 text-xs text-gray-400">キャンセル</button>
                   </div>
                 )}
               </div>
