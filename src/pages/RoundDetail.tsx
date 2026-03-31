@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Round } from '../types'
-import { deleteRoundFromFirestore } from '../lib/firestore'
+import { Round, GearSet } from '../types'
+import { deleteRoundFromFirestore, loadGearSets } from '../lib/firestore'
 import { deleteRound } from '../utils/storage'
 import { calcRoundStats, scoreColor, formatScore } from '../utils/stats'
 import { useAuth } from '../contexts/AuthContext'
@@ -16,8 +16,32 @@ export default function RoundDetail({ rounds, onDeleted }: Props) {
   const navigate = useNavigate()
   const { user } = useAuth()
   const round = rounds.find(r => r.id === id)
+  const [gearSets, setGearSets] = useState<GearSet[]>([])
+  const [gearSetsLoading, setGearSetsLoading] = useState(false)
+
+  useEffect(() => {
+    if (!user) {
+      setGearSets([])
+      setGearSetsLoading(false)
+      return
+    }
+    setGearSetsLoading(true)
+    loadGearSets(user.uid)
+      .then(setGearSets)
+      .finally(() => setGearSetsLoading(false))
+  }, [user])
 
   if (!round) return <div className="p-8 text-center text-gray-500">ラウンドが見つかりません</div>
+
+  let gearSetDisplay = ''
+  if (round.gearSetId) {
+    if (!user) gearSetDisplay = 'ログインするとセット名を表示できます'
+    else if (gearSetsLoading) gearSetDisplay = '読み込み中…'
+    else {
+      const g = gearSets.find(x => x.id === round.gearSetId)
+      gearSetDisplay = g ? `${g.name}（${g.clubIds.length}本）` : '（削除されたセット）'
+    }
+  }
 
   const stats = calcRoundStats(round)
   const totalPar = round.holes.reduce((s, h) => s + h.par, 0)
@@ -60,6 +84,13 @@ export default function RoundDetail({ rounds, onDeleted }: Props) {
             <div><div className="text-gray-400 text-xs">GIRパット</div><div className="font-bold">{stats.puttsPerGIR > 0 ? stats.puttsPerGIR.toFixed(2) : '−'}</div></div>
           </div>
         </div>
+
+        {round.gearSetId && (
+          <div className="card border-l-4 border-golf-green">
+            <h3 className="font-bold text-gray-700 mb-1">持ち出したギアセット</h3>
+            <p className="text-sm text-gray-700">{gearSetDisplay}</p>
+          </div>
+        )}
 
         {/* Score breakdown */}
         <div className="card">

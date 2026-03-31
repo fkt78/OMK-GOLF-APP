@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useMemo, useEffect } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { AlertTriangle, Lock, Sun, Cloud, CloudRain, Wind, ChevronDown, ChevronRight, Pencil, Search, Clock } from 'lucide-react'
-import { HoleData, Round } from '../types'
+import { HoleData, Round, GearSet } from '../types'
 import HoleInputRow from '../components/HoleInputRow'
 import { saveRound, generateId } from '../utils/storage'
-import { saveRoundToFirestore } from '../lib/firestore'
+import { saveRoundToFirestore, loadGearSets } from '../lib/firestore'
 import { calcRoundStats } from '../utils/stats'
 import { useAuth } from '../contexts/AuthContext'
 import {
@@ -76,6 +76,27 @@ export default function NewRound({ onSaved }: Props) {
   )
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'front' | 'back'>('front')
+  const [gearSets, setGearSets] = useState<GearSet[]>([])
+  const [gearSetId, setGearSetId] = useState('')
+
+  useEffect(() => {
+    if (!user) {
+      setGearSets([])
+      setGearSetId('')
+      return
+    }
+    let cancelled = false
+    loadGearSets(user.uid).then(sets => {
+      if (cancelled) return
+      setGearSets(sets)
+      setGearSetId(prev => {
+        if (prev && sets.some(s => s.id === prev)) return prev
+        const def = sets.find(s => s.isDefault)
+        return def?.id ?? sets[0]?.id ?? ''
+      })
+    })
+    return () => { cancelled = true }
+  }, [user])
 
   const updateHole = (idx: number, updated: HoleData) => {
     setHoles(prev => prev.map((h, i) => i === idx ? updated : h))
@@ -126,6 +147,9 @@ export default function NewRound({ onSaved }: Props) {
         weather,
         notes,
         holes,
+      }
+      if (user && gearSetId) {
+        round.gearSetId = gearSetId
       }
       if (user) {
         await saveRoundToFirestore(user.uid, round)
@@ -449,6 +473,30 @@ export default function NewRound({ onSaved }: Props) {
               </div>
             </div>
           </div>
+
+          {user && gearSets.length > 0 && (
+            <div>
+              <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">持ち出したギアセット</label>
+              <select
+                value={gearSetId}
+                onChange={e => setGearSetId(e.target.value)}
+                className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-golf-green"
+              >
+                <option value="">（未選択）</option>
+                {gearSets.map(gs => (
+                  <option key={gs.id} value={gs.id}>
+                    {gs.name}（{gs.clubIds.length}本）
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {user && gearSets.length === 0 && (
+            <p className="text-xs text-gray-400 mb-0">
+              <Link to="/bag" className="text-golf-green underline">マイバッグ</Link>
+              でギアセットを作成すると、ここで記録できます。
+            </p>
+          )}
         </div>
 
         {/* Score Summary */}
