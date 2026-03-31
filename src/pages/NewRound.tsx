@@ -7,7 +7,15 @@ import { saveRound, generateId } from '../utils/storage'
 import { saveRoundToFirestore } from '../lib/firestore'
 import { calcRoundStats } from '../utils/stats'
 import { useAuth } from '../contexts/AuthContext'
-import { REGION_NAMES, getPrefectures, getCourses, searchCourses } from '../data/golfCourseData'
+import {
+  REGION_NAMES,
+  getPrefectures,
+  getCourses,
+  searchCourses,
+  isMultiLayoutLeaf,
+  labelCourseLeaf,
+  formatCourseWithLayout,
+} from '../data/golfCourseData'
 
 const RECENT_COURSES_KEY = 'golf_recent_courses'
 const RECENT_COURSES_MAX = 5
@@ -54,7 +62,8 @@ export default function NewRound({ onSaved }: Props) {
   const [courseName, setCourseName] = useState('')
   const [coursePickerRegion, setCoursePickerRegion] = useState('')
   const [coursePickerPref, setCoursePickerPref] = useState('')
-  const [coursePickerStep, setCoursePickerStep] = useState<'region' | 'pref' | 'course' | 'manual' | null>(null)
+  const [coursePickerStep, setCoursePickerStep] = useState<'region' | 'pref' | 'course' | 'subcourse' | 'manual' | null>(null)
+  const [pendingMultiFacility, setPendingMultiFacility] = useState<{ facility: string; layouts: string[] } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearch, setShowSearch] = useState(false)
   const [recentCourses] = useState<string[]>(loadRecentCourses)
@@ -245,7 +254,13 @@ export default function NewRound({ onSaved }: Props) {
                 {coursePickerPref && <span className="text-xs text-gray-400">{coursePickerPref}</span>}
                 <button
                   type="button"
-                  onClick={() => { setCourseName(''); setCoursePickerRegion(''); setCoursePickerPref(''); setCoursePickerStep('region') }}
+                  onClick={() => {
+                    setCourseName('')
+                    setCoursePickerRegion('')
+                    setCoursePickerPref('')
+                    setPendingMultiFacility(null)
+                    setCoursePickerStep('region')
+                  }}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <Pencil size={13} />
@@ -286,7 +301,13 @@ export default function NewRound({ onSaved }: Props) {
                 >
                   リストにないコースを手入力
                 </button>
-                <button type="button" onClick={() => setCoursePickerStep(null)} className="mt-1 w-full py-1.5 text-xs text-gray-400">閉じる</button>
+                <button
+                  type="button"
+                  onClick={() => { setPendingMultiFacility(null); setCoursePickerStep(null) }}
+                  className="mt-1 w-full py-1.5 text-xs text-gray-400"
+                >
+                  閉じる
+                </button>
               </div>
             )}
 
@@ -313,22 +334,31 @@ export default function NewRound({ onSaved }: Props) {
               </div>
             )}
 
-            {/* Step 3: コース選択 */}
+            {/* Step 3: ゴルフ場（施設）選択 */}
             {coursePickerStep === 'course' && coursePickerRegion && coursePickerPref && (
               <div className="mt-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
                 <button type="button" onClick={() => setCoursePickerStep('pref')} className="text-xs text-golf-green mb-2 px-1 flex items-center gap-1">
                   ← {coursePickerPref}
                 </button>
-                <p className="text-xs text-gray-400 mb-2 px-1">コースを選択（50音順）</p>
+                <p className="text-xs text-gray-400 mb-2 px-1">ゴルフ場を選択（50音順）※複数コースがある施設は次の画面で枝を選びます</p>
                 <div className="grid grid-cols-1 gap-1">
-                  {getCourses(coursePickerRegion, coursePickerPref).map(c => (
+                  {getCourses(coursePickerRegion, coursePickerPref).map((leaf, idx) => (
                     <button
-                      key={c}
+                      key={typeof leaf === 'string' ? leaf : `${leaf.facility}-${idx}`}
                       type="button"
-                      onClick={() => { setCourseName(c); setCoursePickerStep(null) }}
-                      className="py-2.5 px-3 rounded-lg text-sm text-left bg-white border border-gray-200 hover:border-golf-green text-gray-700"
+                      onClick={() => {
+                        if (isMultiLayoutLeaf(leaf)) {
+                          setPendingMultiFacility(leaf)
+                          setCoursePickerStep('subcourse')
+                        } else {
+                          setCourseName(leaf)
+                          setCoursePickerStep(null)
+                        }
+                      }}
+                      className="py-2.5 px-3 rounded-lg text-sm text-left bg-white border border-gray-200 hover:border-golf-green text-gray-700 flex justify-between items-center gap-2"
                     >
-                      {c}
+                      <span>{labelCourseLeaf(leaf)}</span>
+                      {isMultiLayoutLeaf(leaf) && <ChevronRight size={13} className="text-gray-300 flex-shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -339,6 +369,36 @@ export default function NewRound({ onSaved }: Props) {
                 >
                   リストにないコースを手入力
                 </button>
+              </div>
+            )}
+
+            {/* Step 4: 同一施設内のコース（レイアウト）選択 */}
+            {coursePickerStep === 'subcourse' && pendingMultiFacility && coursePickerPref && (
+              <div className="mt-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
+                <button
+                  type="button"
+                  onClick={() => { setPendingMultiFacility(null); setCoursePickerStep('course') }}
+                  className="text-xs text-golf-green mb-2 px-1 flex items-center gap-1"
+                >
+                  ← {pendingMultiFacility.facility}
+                </button>
+                <p className="text-xs text-gray-400 mb-2 px-1">プレーしたコース（レイアウト）を選択</p>
+                <div className="grid grid-cols-1 gap-1">
+                  {pendingMultiFacility.layouts.map(layout => (
+                    <button
+                      key={layout}
+                      type="button"
+                      onClick={() => {
+                        setCourseName(formatCourseWithLayout(pendingMultiFacility.facility, layout))
+                        setPendingMultiFacility(null)
+                        setCoursePickerStep(null)
+                      }}
+                      className="py-2.5 px-3 rounded-lg text-sm text-left bg-white border border-gray-200 hover:border-golf-green text-gray-700"
+                    >
+                      {layout}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 

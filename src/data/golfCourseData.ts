@@ -1,10 +1,30 @@
 // ─── 全国ゴルフ場データベース（地方 → 都道府県 → コース名 50音順）──────
 // 2024-2025年営業中の主要コースを収録。手入力による追加も可能。
+//
+// 同一施設に複数レイアウト（杉山・田代など）がある場合は { facility, layouts } で定義する。
+// 保存時の表示名は formatCourseWithLayout で統一（例: 信楽カントリー倶楽部（杉山コース））。
 
 export type RegionName = string
 export type PrefectureName = string
 
-export const GOLF_COURSE_DB: Record<RegionName, Record<PrefectureName, string[]>> = {
+/** 単一名のコース、または施設＋枝コース（レイアウト） */
+export type CourseLeaf = string | { facility: string; layouts: string[] }
+
+export function isMultiLayoutLeaf(leaf: CourseLeaf): leaf is { facility: string; layouts: string[] } {
+  return typeof leaf === 'object' && leaf !== null && 'facility' in leaf && Array.isArray((leaf as { layouts: unknown }).layouts)
+}
+
+/** ラウンド記録に保存するコース名（施設＋レイアウト） */
+export function formatCourseWithLayout(facility: string, layout: string): string {
+  return `${facility}（${layout}）`
+}
+
+/** 一覧・検索用の1行ラベル（複数レイアウト施設は施設名のみ→次画面で枝を選ぶ） */
+export function labelCourseLeaf(leaf: CourseLeaf): string {
+  return typeof leaf === 'string' ? leaf : leaf.facility
+}
+
+export const GOLF_COURSE_DB: Record<RegionName, Record<PrefectureName, CourseLeaf[]>> = {
 
   // ════════════════════════════════════════════════════════
   //  北海道
@@ -892,7 +912,7 @@ export const GOLF_COURSE_DB: Record<RegionName, Record<PrefectureName, string[]>
       '湖南カントリー倶楽部',
       '湖東カントリー倶楽部',
       '志賀カントリー倶楽部',
-      '信楽カントリー倶楽部',
+      { facility: '信楽カントリー倶楽部', layouts: ['杉山コース', '田代コース'] },
       '多賀カントリー倶楽部',
       '長浜カントリー倶楽部',
       '長浜ゴルフ倶楽部',
@@ -1491,7 +1511,7 @@ export function getPrefectures(region: string): string[] {
 }
 
 /** 都道府県からコース一覧を返す（50音順済み） */
-export function getCourses(region: string, prefecture: string): string[] {
+export function getCourses(region: string, prefecture: string): CourseLeaf[] {
   return GOLF_COURSE_DB[region]?.[prefecture] ?? []
 }
 
@@ -1499,7 +1519,18 @@ export function getCourses(region: string, prefecture: string): string[] {
 export function findCourseLocation(courseName: string): { region: string; prefecture: string } | null {
   for (const [region, prefs] of Object.entries(GOLF_COURSE_DB)) {
     for (const [pref, courses] of Object.entries(prefs)) {
-      if (courses.includes(courseName)) return { region, prefecture: pref }
+      for (const leaf of courses) {
+        if (typeof leaf === 'string') {
+          if (leaf === courseName) return { region, prefecture: pref }
+        } else {
+          if (leaf.facility === courseName) return { region, prefecture: pref }
+          for (const layout of leaf.layouts) {
+            if (formatCourseWithLayout(leaf.facility, layout) === courseName) {
+              return { region, prefecture: pref }
+            }
+          }
+        }
+      }
     }
   }
   return null
@@ -1515,13 +1546,29 @@ export type CourseSearchResult = {
 export function searchCourses(query: string, limit = 20): CourseSearchResult[] {
   if (!query.trim()) return []
   const q = query.trim().toLowerCase()
+  const prefLower = (p: string) => p.toLowerCase().includes(q)
   const results: CourseSearchResult[] = []
   for (const [region, prefs] of Object.entries(GOLF_COURSE_DB)) {
     for (const [pref, courses] of Object.entries(prefs)) {
       for (const c of courses) {
-        if (c.toLowerCase().includes(q) || pref.includes(q)) {
-          results.push({ courseName: c, prefecture: pref, region })
-          if (results.length >= limit) return results
+        if (typeof c === 'string') {
+          if (c.toLowerCase().includes(q) || prefLower(pref)) {
+            results.push({ courseName: c, prefecture: pref, region })
+            if (results.length >= limit) return results
+          }
+        } else {
+          for (const layout of c.layouts) {
+            const full = formatCourseWithLayout(c.facility, layout)
+            if (
+              full.toLowerCase().includes(q) ||
+              c.facility.toLowerCase().includes(q) ||
+              layout.toLowerCase().includes(q) ||
+              prefLower(pref)
+            ) {
+              results.push({ courseName: full, prefecture: pref, region })
+              if (results.length >= limit) return results
+            }
+          }
         }
       }
     }
