@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, Lock, Sun, Cloud, CloudRain, Wind } from 'lucide-react'
+import { AlertTriangle, Lock, Sun, Cloud, CloudRain, Wind, ChevronDown, ChevronRight, Pencil } from 'lucide-react'
 import { HoleData, Round } from '../types'
 import HoleInputRow from '../components/HoleInputRow'
 import { saveRound, generateId } from '../utils/storage'
 import { saveRoundToFirestore } from '../lib/firestore'
 import { calcRoundStats } from '../utils/stats'
 import { useAuth } from '../contexts/AuthContext'
+import { REGION_NAMES, getPrefectures, getCourses } from '../data/golfCourseData'
 
 function defaultHole(n: number): HoleData {
   return {
@@ -40,6 +41,9 @@ export default function NewRound({ onSaved }: Props) {
   const { user, canAddRound, FREE_ROUND_LIMIT } = useAuth()
 
   const [courseName, setCourseName] = useState('')
+  const [coursePickerRegion, setCoursePickerRegion] = useState('')
+  const [coursePickerPref, setCoursePickerPref] = useState('')
+  const [coursePickerStep, setCoursePickerStep] = useState<'region' | 'pref' | 'course' | 'manual' | null>(null)
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
   const [weather, setWeather] = useState('')
   const [notes, setNotes] = useState('')
@@ -142,15 +146,129 @@ export default function NewRound({ onSaved }: Props) {
       <div className="max-w-2xl mx-auto p-4 space-y-4">
         {/* Course Info */}
         <div className="card space-y-3">
+          {/* ─── コース名ピッカー ─── */}
           <div>
             <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">コース名</label>
-            <input
-              type="text"
-              value={courseName}
-              onChange={e => setCourseName(e.target.value)}
-              placeholder="○○ゴルフクラブ"
-              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
-            />
+
+            {/* 選択済み or 手入力の表示 */}
+            {courseName ? (
+              <div className="mt-1 flex items-center gap-2 bg-green-50 border border-golf-green rounded-lg px-3 py-2">
+                <span className="text-sm font-semibold text-golf-green flex-1">{courseName}</span>
+                {coursePickerPref && <span className="text-xs text-gray-400">{coursePickerPref}</span>}
+                <button
+                  type="button"
+                  onClick={() => { setCourseName(''); setCoursePickerRegion(''); setCoursePickerPref(''); setCoursePickerStep('region') }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <Pencil size={13} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setCoursePickerStep('region')}
+                className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-left text-gray-400 flex justify-between items-center bg-white"
+              >
+                <span>地方・都道府県から選ぶ</span>
+                <ChevronDown size={14} className="text-gray-300" />
+              </button>
+            )}
+
+            {/* Step 1: 地方選択 */}
+            {coursePickerStep === 'region' && (
+              <div className="mt-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
+                <p className="text-xs text-gray-400 mb-2 px-1">地方を選択</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {REGION_NAMES.map(r => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => { setCoursePickerRegion(r); setCoursePickerPref(''); setCoursePickerStep('pref') }}
+                      className="py-2.5 px-3 rounded-lg text-sm font-medium text-left bg-white border border-gray-200 hover:border-golf-green text-gray-700 flex justify-between items-center"
+                    >
+                      <span>{r}</span>
+                      <ChevronRight size={13} className="text-gray-300" />
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setCoursePickerStep('manual') }}
+                  className="mt-2 w-full py-2 px-3 rounded-lg text-xs font-medium text-gray-500 bg-white border border-dashed border-gray-300 hover:border-golf-green"
+                >
+                  リストにないコースを手入力
+                </button>
+                <button type="button" onClick={() => setCoursePickerStep(null)} className="mt-1 w-full py-1.5 text-xs text-gray-400">閉じる</button>
+              </div>
+            )}
+
+            {/* Step 2: 都道府県選択 */}
+            {coursePickerStep === 'pref' && coursePickerRegion && (
+              <div className="mt-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
+                <button type="button" onClick={() => setCoursePickerStep('region')} className="text-xs text-golf-green mb-2 px-1 flex items-center gap-1">
+                  ← {coursePickerRegion}
+                </button>
+                <p className="text-xs text-gray-400 mb-2 px-1">都道府県を選択</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {getPrefectures(coursePickerRegion).map(p => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => { setCoursePickerPref(p); setCoursePickerStep('course') }}
+                      className="py-2.5 px-3 rounded-lg text-sm font-medium text-left bg-white border border-gray-200 hover:border-golf-green text-gray-700 flex justify-between items-center"
+                    >
+                      <span>{p}</span>
+                      <ChevronRight size={13} className="text-gray-300" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: コース選択 */}
+            {coursePickerStep === 'course' && coursePickerRegion && coursePickerPref && (
+              <div className="mt-2 border border-gray-100 rounded-xl bg-gray-50 p-2">
+                <button type="button" onClick={() => setCoursePickerStep('pref')} className="text-xs text-golf-green mb-2 px-1 flex items-center gap-1">
+                  ← {coursePickerPref}
+                </button>
+                <p className="text-xs text-gray-400 mb-2 px-1">コースを選択（50音順）</p>
+                <div className="grid grid-cols-1 gap-1">
+                  {getCourses(coursePickerRegion, coursePickerPref).map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => { setCourseName(c); setCoursePickerStep(null) }}
+                      className="py-2.5 px-3 rounded-lg text-sm text-left bg-white border border-gray-200 hover:border-golf-green text-gray-700"
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCoursePickerStep('manual')}
+                  className="mt-2 w-full py-2 px-3 rounded-lg text-xs font-medium text-gray-500 bg-white border border-dashed border-gray-300 hover:border-golf-green"
+                >
+                  リストにないコースを手入力
+                </button>
+              </div>
+            )}
+
+            {/* 手入力モード */}
+            {coursePickerStep === 'manual' && (
+              <div className="mt-2">
+                <input
+                  type="text"
+                  value={courseName}
+                  onChange={e => setCourseName(e.target.value)}
+                  onBlur={() => { if (courseName.trim()) setCoursePickerStep(null) }}
+                  placeholder="コース名を入力..."
+                  autoFocus
+                  className="w-full border border-golf-green rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
+                />
+                <button type="button" onClick={() => setCoursePickerStep(null)} className="mt-1 text-xs text-gray-400">キャンセル</button>
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
