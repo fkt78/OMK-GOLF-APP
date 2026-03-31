@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { FirebaseError } from 'firebase/app'
-import { Plus, Pencil, Trash2, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, Check, ChevronDown } from 'lucide-react'
 import { Club, GearSet, ClubType, CLUB_TYPE_LABELS } from '../types'
 import { loadClubs, saveClub, updateClub, deleteClub, loadGearSets, saveGearSet, updateGearSet, deleteGearSet } from '../lib/firestore'
 import { useAuth } from '../contexts/AuthContext'
@@ -60,6 +60,80 @@ function emptyClub(): Omit<Club, 'id' | 'userId' | 'createdAt'> {
     hoselSetting: '',
     notes: '',
   }
+}
+
+// ─── 2列グリッド選択ピッカー ─────────────────────────────────────
+function GridPicker({
+  label,
+  options,
+  value,
+  onChange,
+  placeholder = '選択してください',
+  showCustom = true,
+}: {
+  label?: string
+  options: string[]
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  showCustom?: boolean
+}) {
+  const [open, setOpen] = useState(false)
+  const displayValue = value && value !== CUSTOM_INPUT_VALUE ? value : ''
+
+  if (options.length === 0) return null
+
+  return (
+    <div>
+      {label && <label className="text-xs text-gray-500">{label}</label>}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-left flex justify-between items-center bg-white"
+      >
+        <span className={displayValue ? 'text-gray-800' : 'text-gray-400'}>
+          {displayValue || placeholder}
+        </span>
+        <ChevronDown size={14} className={`text-gray-400 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="mt-1 p-2 border border-gray-100 rounded-xl bg-gray-50">
+          <div className="grid grid-cols-2 gap-1.5">
+            {options.map(s => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => { onChange(s); setOpen(false) }}
+                className={`py-2 px-3 rounded-lg text-xs font-medium text-left leading-snug transition-all ${
+                  value === s
+                    ? 'bg-golf-green text-white'
+                    : 'bg-white border border-gray-200 text-gray-700 hover:border-golf-green'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          {showCustom && (
+            <button
+              type="button"
+              onClick={() => { onChange(CUSTOM_INPUT_VALUE); setOpen(false) }}
+              className="mt-1.5 w-full py-2 px-3 rounded-lg text-xs font-medium text-gray-500 bg-white border border-dashed border-gray-300 hover:border-golf-green"
+            >
+              その他（手入力）
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="mt-1 w-full py-1.5 text-xs text-gray-400 hover:text-gray-600"
+          >
+            閉じる
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 type ClubFormState = Omit<Club, 'id' | 'userId' | 'createdAt'>
@@ -175,19 +249,14 @@ function ClubFormFields({
         <label className="text-xs text-gray-500">シリーズ/モデル</label>
         {seriesOpts.length > 0 ? (
           <>
-            <select
+            <GridPicker
+              options={seriesOpts}
               value={seriesSelectVal}
-              onChange={e => {
-                const v = e.target.value
+              onChange={v => {
                 if (v === CUSTOM_INPUT_VALUE) setClubForm(f => ({ ...f, series: '' }))
                 else setClubForm(f => ({ ...f, series: v }))
               }}
-              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-            >
-              <option value="">選択してください</option>
-              {seriesOpts.map(s => <option key={s} value={s}>{s}</option>)}
-              <option value={CUSTOM_INPUT_VALUE}>その他（手入力）</option>
-            </select>
+            />
             {(!seriesInList || seriesSelectVal === CUSTOM_INPUT_VALUE) && (
               <input
                 value={clubForm.series}

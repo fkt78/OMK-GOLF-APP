@@ -260,109 +260,370 @@ export type MakerSeriesMap = {
 }
 
 export const MAKER_SERIES: Record<string, MakerSeriesMap> = {
+  // ── Callaway ─────────────────────────────────────────────────
   Callaway: {
-    driver:  ['Paradym Ai Smoke Max', 'Paradym Ai Smoke', 'Paradym Ai Smoke Max D', 'Paradym Ai Smoke Triple Diamond', 'Paradym', 'Rogue ST Max', 'Rogue ST Max D', 'Epic Speed'],
-    wood:    ['Paradym Ai Smoke', 'Paradym', 'Rogue ST Max', 'Epic Speed'],
-    utility: ['Paradym Ai Smoke', 'Apex', 'Rogue ST Max OS'],
-    iron:    ['Paradym Ai Smoke', 'Apex', 'Apex Pro', 'Apex CB', 'X Forged CB', 'X Forged', 'Rogue ST Max OS'],
-    wedge:   ['Jaws Raw', 'Jaws Full Toe', 'MD5'],
-    putter:  ['Odyssey White Hot OG', 'Odyssey Ai-ONE', 'Odyssey Tri-Hot 5K', 'Odyssey Eleven'],
+    driver:  [
+      'Paradym Ai Smoke Max', 'Paradym Ai Smoke', 'Paradym Ai Smoke Max D', 'Paradym Ai Smoke Triple Diamond',
+      'Paradym', 'Paradym X', 'Paradym Triple Diamond',
+      'Rogue ST Max', 'Rogue ST Max D', 'Rogue ST Max LS', 'Rogue ST Triple Diamond',
+      'Epic Max', 'Epic Max LS', 'Epic Speed', 'Epic Flash', 'Epic Flash Sub Zero',
+      'Mavrik Max', 'Mavrik', 'Mavrik Sub-Zero', 'Big Bertha B21', 'Big Bertha',
+    ],
+    wood:    [
+      'Paradym Ai Smoke', 'Paradym', 'Rogue ST Max', 'Rogue ST Max LS',
+      'Epic Max', 'Epic Speed', 'Epic Flash', 'Mavrik', 'Big Bertha B21',
+    ],
+    utility: [
+      'Paradym Ai Smoke', 'Apex', 'Apex MB', 'Apex Pro',
+      'Rogue ST Max OS', 'Epic Flash', 'Mavrik', 'Big Bertha B21', 'Apex DCB',
+    ],
+    iron:    [
+      'Paradym Ai Smoke', 'Apex', 'Apex Pro', 'Apex CB', 'Apex MB', 'Apex DCB',
+      'X Forged CB', 'X Forged', 'X Forged UT',
+      'Rogue ST Max OS', 'Rogue ST Pro', 'Rogue X',
+      'Mavrik Pro', 'Mavrik Max OS', 'Mavrik',
+      'Big Bertha B21', 'Edge', '300 Pro',
+    ],
+    wedge:   [
+      'Jaws Raw', 'Jaws Full Toe', 'Jaws Full Toe Raw',
+      'MD5', 'Mack Daddy CB', 'Mack Daddy 4',
+      'PM Grind 19', 'Sure Out 2',
+    ],
+    putter:  [
+      'Odyssey Ai-ONE', 'Odyssey Ai-ONE Milled', 'Odyssey Ai-ONE DB',
+      'Odyssey White Hot OG', 'Odyssey White Hot Pro',
+      'Odyssey Tri-Hot 5K', 'Odyssey Eleven', 'Odyssey Ten',
+      'Odyssey Two-Ball', 'Odyssey Triple Track', 'Odyssey Stroke Lab',
+    ],
   },
+  // ── TaylorMade ───────────────────────────────────────────────
   TaylorMade: {
-    driver:  ['Qi10 Max', 'Qi10', 'Qi10 LS', 'Qi10 Max D', 'Stealth 2 Plus', 'Stealth 2', 'Stealth 2 HD', 'SIM2 Max'],
-    wood:    ['Qi10', 'Stealth 2', 'Stealth 2 HD', 'SIM2 Max'],
-    utility: ['Qi10', 'Stealth 2', 'SIM2 Max Rescue'],
-    iron:    ['P790', 'P770', 'P7TW', 'P7MB', 'P7MC', 'Stealth', 'SIM2 Max', 'T200'],
-    wedge:   ['Hi-Toe Raw', 'Milled Grind 4', 'Milled Grind Hi-Toe 3'],
-    putter:  ['Spider GT', 'Spider EX', 'TP Hydro Blast'],
+    driver:  [
+      'Qi10 Max', 'Qi10', 'Qi10 LS', 'Qi10 Max D', 'Qi10 Tour',
+      'Qi35 Max', 'Qi35', 'Qi35 LS', 'Qi35 Ultra',
+      'Stealth 2 Plus', 'Stealth 2', 'Stealth 2 HD',
+      'Stealth Plus', 'Stealth', 'Stealth HD',
+      'SIM2 Max', 'SIM2 Max D', 'SIM2', 'SIM2 Ti',
+      'SIM Max', 'SIM Max D', 'SIM',
+      'M6', 'M5', 'M4', 'M3', 'BRNR Mini',
+    ],
+    wood:    [
+      'Qi10', 'Qi35', 'Stealth 2', 'Stealth 2 HD', 'Stealth',
+      'SIM2 Max', 'SIM2', 'SIM Max', 'SIM', 'M6', 'M5', 'M4',
+    ],
+    utility: [
+      'Qi10', 'Qi35', 'Stealth 2', 'SIM2 Max Rescue', 'SIM Rescue',
+      'GAPR Lo', 'GAPR Mid', 'DHY', 'SIM DHY',
+    ],
+    iron:    [
+      'P790 (2023)', 'P790 Ti', 'P770 (2023)', 'P760', 'P7TW', 'P7MB', 'P7MC', 'P730', 'P·CB',
+      'Stealth', 'Stealth HD', 'Stealth DHY',
+      'SIM2 Max', 'SIM2 Max OS', 'SIM DHY',
+      'T200', 'T150', 'T100', 'T100·S',
+      'Kalea Premier', 'M4', 'M-CGB',
+    ],
+    wedge:   [
+      'Hi-Toe Raw', 'Hi-Toe Raw Big Foot', 'Hi-Toe 3',
+      'Milled Grind 4', 'Milled Grind Hi-Toe 4', 'Milled Grind Hi-Toe 3',
+      'Milled Grind 3', 'MG3',
+    ],
+    putter:  [
+      'Spider GT', 'Spider GT Notchback', 'Spider GT Rollback',
+      'Spider EX', 'Spider Tour', 'Spider X', 'Spider S',
+      'TP Hydro Blast', 'TP Patina', 'TP Ardmore',
+      'Truss TB1', 'Truss TM1',
+    ],
   },
+  // ── PING ──────────────────────────────────────────────────────
   PING: {
-    driver:  ['G430 Max 10K', 'G430 Max', 'G430 LST', 'G430 SFT', 'G425 Max', 'G425 LST', 'G425 SFT'],
-    wood:    ['G430 Max', 'G430 LST', 'G425 Max'],
-    utility: ['G430', 'G425', 'G410'],
-    iron:    ['G430', 'i230', 'Blueprint T', 'Blueprint S', 'i59', 's159'],
-    wedge:   ['Glide 4.0', 'Glide Forged Pro'],
-    putter:  ['Anser', 'Sigma 2', 'PLD Milled'],
+    driver:  [
+      'G430 Max 10K', 'G430 Max', 'G430 LST', 'G430 SFT',
+      'G430 HL', 'G430 Max 10K LST',
+      'G425 Max', 'G425 LST', 'G425 SFT',
+      'G410 Plus', 'G410 LST', 'G410 SFT',
+      'G400 Max', 'G400 LST', 'G400 SFT',
+    ],
+    wood:    [
+      'G430 Max', 'G430 LST', 'G430 HL',
+      'G425 Max', 'G425 LST',
+      'G410 Plus', 'G400', 'G400 Max',
+    ],
+    utility: [
+      'G430', 'G425', 'G410', 'G400', 'G700',
+      'G Le3', 'i230 Utility',
+    ],
+    iron:    [
+      'G430', 'i230', 'i230 Wide Sole',
+      'Blueprint T', 'Blueprint S', 'Blueprint',
+      'i59', 's159', 'i525', 'i210',
+      'G425', 'G400', 'iBlade', 'Anser Forged',
+      's55', 'i200', 'i500',
+    ],
+    wedge:   [
+      'Glide 4.0', 'Glide 4.0 Stealth', 'Glide Forged Pro',
+      'Glide 3.0', 'Glide 3.0 Stealth', 'Glide 2.0 Stealth',
+    ],
+    putter:  [
+      'Anser', 'Anser 2', 'Anser D',
+      'PLD Milled', 'PLD Milled Anser', 'PLD Milled DS72',
+      'Sigma 2', 'Sigma G', 'Sigma 2 Valor',
+      'Heppler', 'Heppler Anser 2', 'Heppler Fetch',
+      'Ketsch', 'Ketsch G', 'Zing 2', 'Oslo H',
+    ],
   },
+  // ── Titleist ─────────────────────────────────────────────────
   Titleist: {
-    driver:  ['TSR3', 'TSR2', 'TSR1', 'TSi3', 'TSi2'],
-    wood:    ['TSR3', 'TSR2', 'TSi3', 'TSi2'],
-    utility: ['TSR', 'TSi', 'T200 Utility', 'U510'],
-    iron:    ['T100', 'T100S', 'T150', 'T200', 'T300', 'T350', 'AP3', 'CB', 'MB'],
-    wedge:   ['Vokey SM10', 'Vokey SM9', 'Vokey WedgeWorks'],
-    putter:  ['Scotty Cameron Phantom', 'Scotty Cameron Super Select', 'Scotty Cameron Special Select'],
+    driver:  [
+      'TSR3', 'TSR2', 'TSR1', 'TSR4',
+      'TSi3', 'TSi2', 'TSi1',
+      'TS3', 'TS2', 'TS1',
+      '917D3', '917D2', '915D3', '915D2',
+    ],
+    wood:    [
+      'TSR3', 'TSR2', 'TSR1',
+      'TSi3', 'TSi2', 'TSi1',
+      'TS3', 'TS2', 'TS1',
+      '917F3', '917F2', '915F',
+    ],
+    utility: [
+      'TSR', 'TSi', 'TS', 'T200 Utility', 'U510', 'U505',
+      '816H1', '816H2', '915Hd',
+    ],
+    iron:    [
+      'T100', 'T100·S', 'T150', 'T200', 'T300', 'T350',
+      'T-MB', 'AP3',
+      '718 AP1', '718 AP2', '718 AP3', '718 CB', '718 MB',
+      '716 AP1', '716 AP2', '716 CB', '716 MB',
+      '620 MB', '620 CB', '620 UD+2',
+    ],
+    wedge:   [
+      'Vokey SM10', 'Vokey SM9', 'Vokey SM8', 'Vokey SM7',
+      'Vokey WedgeWorks', 'Vokey SM10 RAW',
+    ],
+    putter:  [
+      'Scotty Cameron Phantom', 'Scotty Cameron Phantom X',
+      'Scotty Cameron Super Select', 'Scotty Cameron Super Select Del Mar',
+      'Scotty Cameron Special Select', 'Scotty Cameron Special Select Flowback',
+      'Scotty Cameron Newport', 'Scotty Cameron Newport 2',
+      'Scotty Cameron Fastback', 'Scotty Cameron Golo',
+      'Scotty Cameron X5', 'Scotty Cameron Select',
+    ],
   },
+  // ── Cleveland ────────────────────────────────────────────────
   Cleveland: {
-    driver:  ['Launcher XL Lite', 'Launcher XL Halo'],
-    wood:    ['Launcher XL Halo'],
-    utility: ['Launcher XL Halo'],
-    iron:    ['ZipCore XL', 'Launcher XL Halo', 'ZipCore'],
-    wedge:   ['RTX 6 ZipCore', 'RTX Full Face 2', 'CBX4', 'Smart Sole 4'],
-    putter:  ['Frontline Elite', 'HB Soft Milled'],
+    driver:  ['Launcher XL Lite', 'Launcher XL Halo', 'HiBore XLS'],
+    wood:    ['Launcher XL Halo', 'Launcher HB Turbo'],
+    utility: ['Launcher XL Halo', 'Launcher HB Turbo'],
+    iron:    [
+      'ZipCore XL', 'Launcher XL Halo', 'ZipCore', 'CBX4',
+      'HB Soft 2', 'HB Soft', 'Launcher HB Turbo',
+    ],
+    wedge:   [
+      'RTX 6 ZipCore', 'RTX 6 Full Face', 'RTX Full Face 2',
+      'RTX 4 ZipCore', 'RTX 4 Full Face', 'RTX ZipCore',
+      'CBX4', 'CBX Zipcore', 'CBX 2',
+      'Smart Sole 4 C', 'Smart Sole 4 S', 'Smart Sole 3',
+      '588 RTX', '588 RTX 2.0',
+    ],
+    putter:  [
+      'Frontline Elite', 'Frontline Elite 2.0',
+      'HB Soft Milled', 'HB Soft 2', 'HB Soft',
+      'Huntington Beach Soft', 'TFi 2135',
+    ],
   },
+  // ── Mizuno ───────────────────────────────────────────────────
   Mizuno: {
-    driver:  ['ST-Z 230', 'ST-X 230', 'ST-MAX 230'],
-    wood:    ['ST-Z 230', 'ST-X 230'],
-    utility: ['CLK', 'ST-Z 230'],
-    iron:    ['Pro 241', 'Pro 243', 'Pro 245', 'JPX923 Tour', 'JPX923 Forged', 'JPX923 Hot Metal', 'MP-20 HMB', 'MP-20 MB'],
-    wedge:   ['S23', 'T24', 'ES21'],
-    putter:  ['M.Craft', 'Omoi'],
+    driver:  [
+      'ST-Z 230', 'ST-X 230', 'ST-MAX 230',
+      'ST-G 220', 'ST-Z 220', 'ST-X 220',
+      'ST-200', 'ST-200X', 'ST-200G',
+      'ST-190', 'ST-190G',
+    ],
+    wood:    [
+      'ST-Z 230', 'ST-X 230', 'ST-G 220', 'ST-Z 220',
+      'ST-200', 'ST-190',
+    ],
+    utility: [
+      'CLK', 'ST-Z 230', 'ST-G 220', 'ST-200',
+      'JPX923', 'JPX900', 'MP-H5',
+    ],
+    iron:    [
+      'Pro 241', 'Pro 243', 'Pro 245',
+      'JPX923 Tour', 'JPX923 Forged', 'JPX923 Hot Metal Pro', 'JPX923 Hot Metal',
+      'JPX921 Tour', 'JPX921 Forged', 'JPX921 Hot Metal Pro', 'JPX921 Hot Metal',
+      'JPX919 Tour', 'JPX919 Forged', 'JPX919 Hot Metal',
+      'JPX903 Forged', 'JPX903 Hot Metal', 'JPX850 Forged',
+      'MP-20 HMB', 'MP-20 MMC', 'MP-20 MB',
+      'MP-18 MMC', 'MP-18 SC', 'MP-18 MB',
+      'MP-5', 'MP-4', 'MP-H5', 'MP-54', 'MP-64', 'MP-25',
+    ],
+    wedge:   ['T24', 'S23', 'T22', 'S18', 'T7', 'ES21', 'MP-T11'],
+    putter:  [
+      'M.Craft OMOI', 'M.Craft II', 'M.Craft III', 'M.Craft V', 'M.Craft VII',
+      'Omoi', 'M.Craft',
+    ],
   },
+  // ── Srixon ───────────────────────────────────────────────────
   Srixon: {
-    driver:  ['ZX5 Mk II LS', 'ZX5 Mk II', 'ZX7 Mk II'],
-    wood:    ['ZX Mk II'],
-    utility: ['ZX Mk II', 'U85'],
-    iron:    ['ZX7 Mk II', 'ZX5 Mk II', 'ZX4 Mk II', 'ZX Utility'],
-    wedge:   ['ZX4 MkII', 'ZX5 MkII'],
-    putter:  [],
+    driver:  [
+      'ZX9 Mk II', 'ZX5 Mk II LS', 'ZX5 Mk II', 'ZX7 Mk II',
+      'ZX9', 'ZX7', 'ZX5',
+      'Z785', 'Z585', 'Z355',
+    ],
+    wood:    ['ZX Mk II', 'ZX5 Mk II', 'ZX7 Mk II', 'ZX5', 'ZX7', 'Z F85'],
+    utility: ['ZX Mk II', 'U85', 'U65', 'ZX', 'H85', 'Z U85'],
+    iron:    [
+      'ZX7 Mk II', 'ZX5 Mk II', 'ZX4 Mk II', 'ZX Utility',
+      'ZX7', 'ZX5', 'ZX4',
+      'Z 785', 'Z 585', 'Z 385', 'Z 745', 'Z 545',
+    ],
+    wedge:   ['ZX4 MkII', 'ZX5 MkII', 'Z 585', 'Z 745', 'RTX ZipCore'],
+    putter:  ['Z-Star PT', 'Soft Feel PT'],
   },
+  // ── Cobra ────────────────────────────────────────────────────
   Cobra: {
-    driver:  ['Darkspeed X', 'Darkspeed Max', 'Darkspeed LS', 'Aerojet Max', 'Aerojet', 'Aerojet LS'],
-    wood:    ['Darkspeed', 'Aerojet'],
-    utility: ['Darkspeed', 'Aerojet'],
-    iron:    ['Darkspeed', 'Aerojet', 'King Tour', 'King Forged TEC'],
-    wedge:   ['King Wedge', 'Snakebite'],
-    putter:  ['King 3D', 'King Agera'],
+    driver:  [
+      'Darkspeed X', 'Darkspeed Max', 'Darkspeed LS', 'Darkspeed LS Tour',
+      'Aerojet Max', 'Aerojet', 'Aerojet LS',
+      'LTDx Max', 'LTDx', 'LTDx LS',
+      'RADSPEED XD', 'RADSPEED', 'RADSPEED XB',
+      'F9 Speedback', 'King F9', 'King F8+',
+    ],
+    wood:    [
+      'Darkspeed', 'Aerojet', 'LTDx', 'RADSPEED',
+      'F9 Speedback', 'King F9',
+    ],
+    utility: [
+      'Darkspeed', 'Aerojet', 'LTDx', 'RADSPEED',
+      'King Utility', 'F9 Speedback',
+    ],
+    iron:    [
+      'Darkspeed', 'Aerojet', 'LTDx', 'King Tour',
+      'King Forged TEC', 'King MB', 'King CB',
+      'RADSPEED', 'F9', 'Baffler Rail',
+    ],
+    wedge:   ['King Wedge', 'Snakebite', 'King MIM'],
+    putter:  ['King 3D', 'King Agera', 'King Putters'],
   },
+  // ── Honma ────────────────────────────────────────────────────
   Honma: {
-    driver:  ['TR23', 'TW757 455', 'TW757 460', 'BERES 11', 'XP-1'],
-    wood:    ['TR23', 'TW757', 'BERES 11'],
-    utility: ['TR23', 'TW757', 'BERES 11'],
-    iron:    ['TR23', 'TW757', 'BERES 11', 'T World GS'],
-    wedge:   ['T//World TR', 'TW-W'],
-    putter:  ['T//World GS PT'],
+    driver:  [
+      'TR23', 'TW757 455', 'TW757 460',
+      'TR20 460', 'TR20 440', 'TR20 Proto',
+      'TW747 455', 'TW747 460',
+      'BERES 11', 'BERES IE', 'BERES IS',
+      'XP-1', 'S-06',
+    ],
+    wood:    [
+      'TR23', 'TR20', 'TW757', 'TW747',
+      'BERES 11', 'BERES IE',
+    ],
+    utility: [
+      'TR23', 'TR20', 'TW757', 'TW747',
+      'BERES 11', 'BERES IE', 'BERES IS',
+    ],
+    iron:    [
+      'TR23', 'TR20P', 'TR20',
+      'TW757P', 'TW757V', 'TW747P', 'TW747V',
+      'TW737P', 'TW737V', 'TW737Gs',
+      'BERES 11', 'BERES IS-06', 'BERES IE',
+      'T World GS', 'T World XP-1',
+    ],
+    wedge:   [
+      'T//World TR', 'T//World XW-1', 'T//World TW-W',
+      'TW-W', 'T//World GS',
+    ],
+    putter:  ['T//World GS PT', 'BERES PT', 'PP-202', 'TW-PT'],
   },
+  // ── Yonex ────────────────────────────────────────────────────
   Yonex: {
-    driver:  ['Ezone Elite 4', 'Ezone GS', 'Ezone XP'],
-    wood:    ['Ezone Elite 4', 'Ezone GS'],
-    utility: ['Ezone GS'],
-    iron:    ['Ezone Elite 4', 'Ezone GS', 'Ezone XP'],
-    wedge:   [],
-    putter:  [],
+    driver:  [
+      'Ezone Elite 4', 'Ezone GS', 'Ezone XP',
+      'Ezone Elite 3', 'Royal Ezone',
+    ],
+    wood:    [
+      'Ezone Elite 4', 'Ezone GS', 'Ezone Elite 3',
+    ],
+    utility: [
+      'Ezone GS', 'Ezone Elite 4', 'Ezone XP',
+    ],
+    iron:    [
+      'Ezone Elite 4', 'Ezone GS', 'Ezone XP',
+      'Ezone Elite 3', 'Ezone CB', 'Royal Ezone',
+    ],
+    wedge:   ['Ezone Elite', 'Ezone GS Wedge'],
+    putter:  ['Ezone GS PT', 'Ezone PT'],
   },
+  // ── Bridgestone ──────────────────────────────────────────────
   Bridgestone: {
-    driver:  ['B2HT', 'B1ST', 'JGR HF1', 'JGR'],
-    wood:    ['B2HT', 'JGR'],
-    utility: ['B2HT', 'JGR'],
-    iron:    ['B2HT', 'B1ST', 'JGR HF1', 'Tour B JGR'],
-    wedge:   ['Tour B XW-1', 'Tour B XW-2'],
-    putter:  [],
+    driver:  [
+      'B2HT', 'B1ST',
+      'Tour B JGR HF1', 'Tour B JGR', 'JGR HF1', 'JGR',
+      'Tour B XD-3', 'Tour B XD-5', 'Tour B XD-7',
+      'Tour B X', 'Tour B XS',
+    ],
+    wood:    [
+      'B2HT', 'JGR', 'Tour B JGR',
+      'Tour B XW-3', 'Tour B FW',
+    ],
+    utility: [
+      'B2HT', 'JGR', 'Tour B JGR',
+      'Tour B XU', 'Tour B HF1',
+    ],
+    iron:    [
+      'B2HT', 'B1ST', 'JGR HF1', 'Tour B JGR', 'Tour B JGR HF1',
+      'Tour B X', 'Tour B CB', 'Tour B MB',
+      'J15', 'J15 CB', 'J15 DF',
+      'J40', 'J40 CB', 'J40 DF', 'J40 MB',
+      'J38', 'J33', 'J33 CB',
+    ],
+    wedge:   [
+      'Tour B XW-1', 'Tour B XW-2', 'Tour B XW-3',
+      'Tour B CBX', 'J40 Wedge',
+    ],
+    putter:  ['Tour B PT', 'J40 PT'],
   },
+  // ── XXIO ──────────────────────────────────────────────────────
   XXIO: {
-    driver:  ['XXIO 13', 'XXIO 12', 'XXIO X'],
-    wood:    ['XXIO 13', 'XXIO 12', 'XXIO X'],
-    utility: ['XXIO 13', 'XXIO 12'],
-    iron:    ['XXIO 13', 'XXIO 12', 'XXIO X'],
-    wedge:   [],
-    putter:  ['XXIO'],
+    driver:  [
+      'XXIO 13', 'XXIO 12', 'XXIO 11', 'XXIO 10',
+      'XXIO X', 'XXIO X-eks',
+      'XXIO Prime 12', 'XXIO Prime 11', 'XXIO Prime',
+      'XXIO Ladies', 'XXIO HL',
+    ],
+    wood:    [
+      'XXIO 13', 'XXIO 12', 'XXIO 11', 'XXIO 10',
+      'XXIO X', 'XXIO Prime 12', 'XXIO Prime',
+    ],
+    utility: [
+      'XXIO 13', 'XXIO 12', 'XXIO 11', 'XXIO X',
+      'XXIO Prime', 'XXIO Hybrid',
+    ],
+    iron:    [
+      'XXIO 13', 'XXIO 12', 'XXIO 11', 'XXIO 10',
+      'XXIO X', 'XXIO Prime 12', 'XXIO Prime',
+      'XXIO Ladies', 'XXIO Forged',
+    ],
+    wedge:   ['XXIO Wedge', 'XXIO 12 Wedge'],
+    putter:  ['XXIO', 'XXIO Prime PT', 'XXIO 11 PT'],
   },
+  // ── Yamaha ───────────────────────────────────────────────────
   Yamaha: {
-    driver:  ['inpres UD+2', 'inpres X', 'RMX VD', 'RMX'],
-    wood:    ['inpres UD+2', 'RMX'],
-    utility: ['inpres UD+2', 'RMX'],
-    iron:    ['inpres UD+2', 'inpres X Forged', 'RMX VD', 'RMX'],
-    wedge:   ['inpres X Forged'],
-    putter:  ['inpres X'],
+    driver:  [
+      'inpres UD+2', 'inpres X',
+      'RMX VD', 'RMX VD59', 'RMX VD50',
+      'RMX 120', 'RMX 220', 'RMX 320',
+      'RMX', 'inpres',
+    ],
+    wood:    ['inpres UD+2', 'RMX VD', 'RMX 220', 'RMX 120', 'RMX'],
+    utility: ['inpres UD+2', 'RMX VD', 'RMX 220', 'RMX'],
+    iron:    [
+      'inpres UD+2', 'inpres X Forged',
+      'RMX VD59', 'RMX VD50', 'RMX 220', 'RMX 120',
+      'RMX', 'inpres',
+    ],
+    wedge:   ['inpres X Forged', 'RMX Wedge'],
+    putter:  ['inpres X', 'RMX PT'],
   },
   // ─── 国内・マニア向けメーカー（シリーズは代表的モデル）────────────
   Epon: {
