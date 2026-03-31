@@ -14,46 +14,191 @@ export const CLUB_NUMBERS: Record<ClubType, string[]> = {
   other:   ['カスタム', 'セット内表記'],
 }
 
-// ─── シャフト候補（代表的モデル。末尾で「その他」手入力可）──────────
-export const SHAFT_OPTIONS: string[] = [
-  // Fujikura
-  'Ventus TR Black', 'Ventus TR Blue', 'Ventus TR Red', 'Ventus Black', 'Ventus Blue', 'Ventus Red',
-  'Speeder NX', 'Speeder EVOLUTION VII', 'Speeder EVOLUTION VI', 'Speeder 661', 'Speeder 757',
-  'Air Speeder', 'Motore X', 'Pro 2.0',
-  // Mitsubishi Chemical
-  'Diamana PD', 'Diamana TB', 'Diamana GT', 'Diamana ZF', 'Diamana BF', 'Diamana D-Limited',
-  'TENSEI 1K Black', 'TENSEI 1K Blue', 'TENSEI 1K White', 'TENSEI AV Blue', 'TENSEI AV Raw White', 'TENSEI CK Pro Orange',
-  'Kai\'li White', 'Kai\'li Blue', 'Kai\'li Red',
-  'C6 Black', 'MMT', 'MMT Scorpion',
-  // Graphite Design
-  'Tour AD DI', 'Tour AD HD', 'Tour AD IZ', 'Tour AD UB', 'Tour AD XC', 'Tour AD VR', 'Tour AD TP',
-  // Project X
-  'HZRDUS Smoke Black', 'HZRDUS Smoke Green', 'HZRDUS Smoke Red', 'HZRDUS Gen 4', 'EvenFlow Riptide',
-  'Project X LS', 'Project X HZRDUS', 'Cypher', 'EvenFlow',
-  // Aldila
-  'Rogue Silver', 'Rogue Black', 'Rogue White', 'NV Green', 'NV Blue',
-  // Oban
-  'Kiyoshi', 'Kiyoshi HB', 'Kiyoshi Purple',
-  // Accra
-  'TZ RPG', 'TZ Six',
-  // Nippon (アイアン・ウェッジ系も含む)
-  'NS PRO 950GH neo', 'NS PRO MODUS³ Tour 105', 'NS PRO MODUS³ Tour 120', 'NS PRO MODUS³ Tour 130',
-  'NS PRO 850GH', 'NS PRO Zelos', 'NS PRO 1050GH',
-  // KBS
-  'KBS Tour', 'KBS Tour-V', 'KBS $-Taper', 'KBS PGI', 'KBS MAX',
-  // True Temper
-  'Dynamic Gold', 'Dynamic Gold 120', 'Dynamic Gold MID', 'Elevate 95', 'Elevate Tour', 'AMT Black', 'AMT Red',
-  // Shimada
-  'Shimada K\'s 8001', 'Shimada Tour',
-  // Aerotech
-  'SteelFiber i95', 'SteelFiber i110',
-  // LA Golf
-  'LA Golf A-Series', 'LA Golf TPZ',
-  // UST Mamiya
-  'Recoil ESX', 'Recoil Prototype', 'Helium',
-  // 汎用
-  '純正シャフト', 'オリジナルカスタム', '中古シャフト',
+// ─── シャフト：ブランド別2段階選択データ ─────────────────────────
+export type ShaftGroup = {
+  brand: string    // 1段目ドロップダウンに表示するブランド名
+  models: string[] // 2段目ドロップダウンに表示するモデル名
+}
+
+export const SHAFT_GROUPS: ShaftGroup[] = [
+  // ── Fujikura ──────────────────────────────────────────────
+  {
+    brand: 'Ventus (Fujikura)',
+    models: [
+      'Ventus TR Black', 'Ventus TR Blue', 'Ventus TR Red',
+      'Ventus Black', 'Ventus Blue', 'Ventus Red',
+      'Ventus Velocore Black', 'Ventus Velocore Blue', 'Ventus Velocore Red',
+    ],
+  },
+  {
+    brand: 'Speeder (Fujikura)',
+    models: [
+      'Speeder NX', 'Speeder NX Green', 'Speeder NX Black',
+      'Speeder EVOLUTION VII', 'Speeder EVOLUTION VI', 'Speeder EVOLUTION V',
+      'Speeder 661', 'Speeder 757', 'Speeder 569',
+    ],
+  },
+  {
+    brand: 'Air Speeder / Motore (Fujikura)',
+    models: ['Air Speeder', 'Air Speeder MH', 'Motore X', 'Motore F1', 'Pro 2.0'],
+  },
+  // ── 三菱ケミカル ────────────────────────────────────────────
+  {
+    brand: 'Diamana (三菱ケミカル)',
+    models: [
+      'Diamana PD', 'Diamana TB', 'Diamana GT', 'Diamana ZF',
+      'Diamana BF', 'Diamana D-Limited', 'Diamana S+',
+      'Diamana WS', 'Diamana DF', 'Diamana RF',
+    ],
+  },
+  {
+    brand: 'TENSEI (三菱ケミカル)',
+    models: [
+      'TENSEI 1K Black', 'TENSEI 1K Blue', 'TENSEI 1K White',
+      'TENSEI AV Blue', 'TENSEI AV Raw White', 'TENSEI AV Raw Orange',
+      'TENSEI CK Pro Orange', 'TENSEI CK Pro Blue',
+    ],
+  },
+  {
+    brand: "Kai'li (三菱ケミカル)",
+    models: ["Kai'li White", "Kai'li Blue", "Kai'li Red", "Kai'li Silver"],
+  },
+  {
+    brand: 'Kurokage (三菱ケミカル)',
+    models: ['Kurokage Black', 'Kurokage Silver', 'Kurokage TM5', 'Kurokage XT'],
+  },
+  {
+    brand: 'MMT / C6 (三菱ケミカル)',
+    models: ['C6 Black', 'MMT', 'MMT Scorpion', 'MMT Graphite'],
+  },
+  // ── グラファイトデザイン ──────────────────────────────────────
+  {
+    brand: 'Tour AD (グラファイトデザイン)',
+    models: [
+      'Tour AD DI', 'Tour AD HD', 'Tour AD IZ', 'Tour AD UB',
+      'Tour AD XC', 'Tour AD VR', 'Tour AD TP', 'Tour AD BB',
+      'Tour AD CQ', 'Tour AD MT',
+    ],
+  },
+  // ── UST Mamiya ──────────────────────────────────────────────
+  {
+    brand: 'ATTAS (UST Mamiya)',
+    models: [
+      'ATTAS KING', 'ATTAS CoooL', 'ATTAS PUNCH', 'ATTAS GoGo',
+      'ATTAS W', 'ATTAS AW', 'ATTAS 11', 'ATTAS G7', 'ATTAS DA',
+    ],
+  },
+  {
+    brand: 'Recoil / Helium (UST Mamiya)',
+    models: ['Recoil ESX', 'Recoil Prototype', 'Recoil 110 SmacWrap', 'Helium', 'Lin-Q Blue', 'Lin-Q Green'],
+  },
+  // ── Project X ───────────────────────────────────────────────
+  {
+    brand: 'HZRDUS (Project X)',
+    models: [
+      'HZRDUS Smoke Black', 'HZRDUS Smoke Green', 'HZRDUS Smoke Red',
+      'HZRDUS Smoke Yellow', 'HZRDUS Gen 4 Black', 'HZRDUS Gen 4 Yellow',
+    ],
+  },
+  {
+    brand: 'EvenFlow / Cypher (Project X)',
+    models: [
+      'EvenFlow Riptide', 'EvenFlow Black', 'EvenFlow Blue', 'EvenFlow T1100',
+      'Cypher 40', 'Cypher 50', 'Cypher 60', 'Project X LS',
+    ],
+  },
+  // ── Aldila ─────────────────────────────────────────────────
+  {
+    brand: 'Aldila',
+    models: [
+      'Rogue Silver', 'Rogue Black', 'Rogue White',
+      'NV Green', 'NV Blue', 'NV 55', 'Quaranta',
+      'Ascent Blue', 'Ascent Red', 'Synergy',
+    ],
+  },
+  // ── Oban ──────────────────────────────────────────────────
+  {
+    brand: 'Oban',
+    models: ['Kiyoshi', 'Kiyoshi HB', 'Kiyoshi Purple', 'Devotion', 'Ikon'],
+  },
+  // ── Accra ─────────────────────────────────────────────────
+  {
+    brand: 'Accra',
+    models: ['TZ RPG', 'TZ Six', 'TZ6 Tour', 'iWood', 'FX 200'],
+  },
+  // ── Basileus ──────────────────────────────────────────────
+  {
+    brand: 'Basileus',
+    models: ['Basileus Fiamma', 'Basileus Γ (Gamma)', 'Basileus Z', 'Basileus Arzante'],
+  },
+  // ── Waccine compo ─────────────────────────────────────────
+  {
+    brand: 'Waccine compo',
+    models: ['Waccine compo GR', 'Waccine compo RD', 'Waccine compo DBCB 50', 'Waccine compo DBCB 60'],
+  },
+  // ── LA Golf ──────────────────────────────────────────────
+  {
+    brand: 'LA Golf',
+    models: ['LA Golf A-Series', 'LA Golf TPZ', 'LA Golf Proto', 'LA Golf PXG Shaft'],
+  },
+  // ── 日本シャフト (Nippon Shaft) ───────────────────────────────
+  {
+    brand: 'NS PRO (日本シャフト)',
+    models: [
+      'NS PRO 950GH neo', 'NS PRO 850GH', 'NS PRO 1050GH',
+      'NS PRO MODUS³ Tour 105', 'NS PRO MODUS³ Tour 120', 'NS PRO MODUS³ Tour 125', 'NS PRO MODUS³ Tour 130',
+      'NS PRO MODUS³ WEDGE 115', 'NS PRO Zelos 7', 'NS PRO Zelos 8',
+    ],
+  },
+  // ── KBS ──────────────────────────────────────────────────
+  {
+    brand: 'KBS',
+    models: ['KBS Tour', 'KBS Tour-V', 'KBS $-Taper', 'KBS $-Taper Lite', 'KBS PGI', 'KBS MAX', 'KBS C-Taper', 'KBS C-Taper Lite'],
+  },
+  // ── True Temper ───────────────────────────────────────────
+  {
+    brand: 'Dynamic Gold / True Temper',
+    models: [
+      'Dynamic Gold', 'Dynamic Gold 120', 'Dynamic Gold MID', 'Dynamic Gold Tour Issue',
+      'AMT Black', 'AMT Red', 'AMT Tour White',
+      'Elevate 95', 'Elevate Tour', 'Elevate MPH',
+    ],
+  },
+  // ── Shimada ───────────────────────────────────────────────
+  {
+    brand: 'Shimada',
+    models: ["Shimada K's 8001", 'Shimada Tour', 'Shimada Attack'],
+  },
+  // ── Aerotech ──────────────────────────────────────────────
+  {
+    brand: 'SteelFiber (Aerotech)',
+    models: ['SteelFiber i95', 'SteelFiber i110', 'SteelFiber i125', 'SteelFiber fc90'],
+  },
+  // ── 汎用 ──────────────────────────────────────────────────
+  {
+    brand: '純正・汎用',
+    models: ['純正シャフト', 'オリジナルカスタム', '中古シャフト'],
+  },
 ]
+
+/** ブランド名一覧（1段目ドロップダウン用） */
+export const SHAFT_BRAND_NAMES = SHAFT_GROUPS.map(g => g.brand)
+
+/** フラットなシャフトモデル一覧（後方互換用） */
+export const SHAFT_OPTIONS: string[] = SHAFT_GROUPS.flatMap(g => g.models)
+
+/** モデル名からブランドを逆引きする */
+export function getShaftBrandForModel(model: string): string | null {
+  for (const g of SHAFT_GROUPS) {
+    if (g.models.includes(model)) return g.brand
+  }
+  return null
+}
+
+/** ブランドからモデル一覧を返す */
+export function getShaftModels(brand: string): string[] {
+  return SHAFT_GROUPS.find(g => g.brand === brand)?.models ?? []
+}
 
 // ─── ヘッド調整・スリーブ（カチャカチャ）入力の候補（datalist 用）────
 export const HOSEL_PRESETS: string[] = [

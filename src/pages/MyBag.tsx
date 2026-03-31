@@ -10,7 +10,9 @@ import {
   MAKER_NAMES,
   getSeriesOptions,
   CUSTOM_INPUT_VALUE,
-  SHAFT_OPTIONS,
+  SHAFT_BRAND_NAMES,
+  getShaftBrandForModel,
+  getShaftModels,
   HOSEL_PRESETS,
   FLEX_PRESET_OPTIONS,
   SHAFT_WEIGHT_PRESETS,
@@ -80,8 +82,17 @@ function ClubFormFields({
   const seriesInList = seriesOpts.length > 0 && seriesOpts.includes(clubForm.series)
   const seriesSelectVal = seriesOpts.length === 0 ? CUSTOM_INPUT_VALUE : (seriesInList ? clubForm.series : CUSTOM_INPUT_VALUE)
 
-  const shaftSelectVal = !clubForm.shaft ? '' : (SHAFT_OPTIONS.includes(clubForm.shaft) ? clubForm.shaft : CUSTOM_INPUT_VALUE)
-  const showShaftCustom = shaftSelectVal === CUSTOM_INPUT_VALUE || (!!clubForm.shaft && !SHAFT_OPTIONS.includes(clubForm.shaft))
+  // ─── シャフト2段階選択 ───────────────────────────────────────
+  const [shaftBrand, setShaftBrand] = useState<string>(() => {
+    if (!clubForm.shaft) return ''
+    return getShaftBrandForModel(clubForm.shaft) ?? CUSTOM_INPUT_VALUE
+  })
+  const shaftModels = getShaftModels(shaftBrand)
+  const shaftModelInList = shaftModels.includes(clubForm.shaft ?? '')
+  const shaftModelSelectVal = shaftBrand === CUSTOM_INPUT_VALUE
+    ? CUSTOM_INPUT_VALUE
+    : (shaftModelInList ? clubForm.shaft ?? '' : (clubForm.shaft ? CUSTOM_INPUT_VALUE : ''))
+  const showShaftModelCustom = shaftModelSelectVal === CUSTOM_INPUT_VALUE
 
   const flexSelectVal = !clubForm.flex ? '' : (FLEX_PRESET_OPTIONS.includes(clubForm.flex) ? clubForm.flex : CUSTOM_INPUT_VALUE)
   const showFlexCustom = flexSelectVal === CUSTOM_INPUT_VALUE || (!!clubForm.flex && !FLEX_PRESET_OPTIONS.includes(clubForm.flex))
@@ -200,27 +211,51 @@ function ClubFormFields({
         <input value={clubForm.nickname} onChange={e => setClubForm(f => ({ ...f, nickname: e.target.value }))} placeholder="例: エース, 切り札..." className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green" />
       </div>
       <div>
-        <label className="text-xs text-gray-500">シャフト</label>
+        <label className="text-xs text-gray-500">シャフト ブランド</label>
         <select
-          value={shaftSelectVal}
+          value={shaftBrand}
           onChange={e => {
             const v = e.target.value
-            if (v === '' || v === CUSTOM_INPUT_VALUE) setClubForm(f => ({ ...f, shaft: '' }))
-            else setClubForm(f => ({ ...f, shaft: v }))
+            setShaftBrand(v)
+            setClubForm(f => ({ ...f, shaft: '' }))
           }}
           className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
         >
           <option value="">未設定</option>
-          {SHAFT_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+          {SHAFT_BRAND_NAMES.map(b => <option key={b} value={b}>{b}</option>)}
           <option value={CUSTOM_INPUT_VALUE}>その他（手入力）</option>
         </select>
-        {showShaftCustom && (
+
+        {shaftBrand && shaftBrand !== CUSTOM_INPUT_VALUE && (
+          <>
+            <label className="text-xs text-gray-500 mt-2 block">シャフト モデル</label>
+            <select
+              value={shaftModelSelectVal}
+              onChange={e => {
+                const v = e.target.value
+                if (v === CUSTOM_INPUT_VALUE) setClubForm(f => ({ ...f, shaft: '' }))
+                else setClubForm(f => ({ ...f, shaft: v }))
+              }}
+              className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            >
+              <option value="">モデルを選択</option>
+              {shaftModels.map(m => <option key={m} value={m}>{m}</option>)}
+              <option value={CUSTOM_INPUT_VALUE}>その他（手入力）</option>
+            </select>
+          </>
+        )}
+
+        {(shaftBrand === CUSTOM_INPUT_VALUE || showShaftModelCustom) && (
           <input
-            value={clubForm.shaft}
+            value={clubForm.shaft ?? ''}
             onChange={e => setClubForm(f => ({ ...f, shaft: e.target.value }))}
-            placeholder="シャフト名を自由入力（リストにないモデルなど）"
+            placeholder="シャフト名を手入力（例: Ventus TR Black 6S）"
             className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-golf-green"
           />
+        )}
+
+        {clubForm.shaft && (
+          <p className="text-xs text-golf-green mt-1">選択中: {clubForm.shaft}</p>
         )}
       </div>
       <div>
