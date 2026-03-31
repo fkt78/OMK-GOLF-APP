@@ -1,13 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, Lock, Sun, Cloud, CloudRain, Wind, ChevronDown, ChevronRight, Pencil } from 'lucide-react'
+import { AlertTriangle, Lock, Sun, Cloud, CloudRain, Wind, ChevronDown, ChevronRight, Pencil, Search, Clock } from 'lucide-react'
 import { HoleData, Round } from '../types'
 import HoleInputRow from '../components/HoleInputRow'
 import { saveRound, generateId } from '../utils/storage'
 import { saveRoundToFirestore } from '../lib/firestore'
 import { calcRoundStats } from '../utils/stats'
 import { useAuth } from '../contexts/AuthContext'
-import { REGION_NAMES, getPrefectures, getCourses } from '../data/golfCourseData'
+import { REGION_NAMES, getPrefectures, getCourses, searchCourses } from '../data/golfCourseData'
+
+const RECENT_COURSES_KEY = 'golf_recent_courses'
+const RECENT_COURSES_MAX = 5
+
+function loadRecentCourses(): string[] {
+  try { return JSON.parse(localStorage.getItem(RECENT_COURSES_KEY) ?? '[]') } catch { return [] }
+}
+function saveRecentCourse(name: string) {
+  const prev = loadRecentCourses().filter(c => c !== name)
+  localStorage.setItem(RECENT_COURSES_KEY, JSON.stringify([name, ...prev].slice(0, RECENT_COURSES_MAX)))
+}
 
 function defaultHole(n: number): HoleData {
   return {
@@ -44,6 +55,10 @@ export default function NewRound({ onSaved }: Props) {
   const [coursePickerRegion, setCoursePickerRegion] = useState('')
   const [coursePickerPref, setCoursePickerPref] = useState('')
   const [coursePickerStep, setCoursePickerStep] = useState<'region' | 'pref' | 'course' | 'manual' | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearch, setShowSearch] = useState(false)
+  const [recentCourses] = useState<string[]>(loadRecentCourses)
+  const searchResults = useMemo(() => searchCourses(searchQuery), [searchQuery])
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
   const [weather, setWeather] = useState('')
   const [notes, setNotes] = useState('')
@@ -108,6 +123,7 @@ export default function NewRound({ onSaved }: Props) {
       } else {
         saveRound(round)
       }
+      saveRecentCourse(courseName.trim())
       onSaved()
       navigate('/')
     } catch (e) {
@@ -149,6 +165,78 @@ export default function NewRound({ onSaved }: Props) {
           {/* ─── コース名ピッカー ─── */}
           <div>
             <label className="text-xs text-gray-500 font-semibold uppercase tracking-wide">コース名</label>
+
+            {/* ─── 最近使ったコース ─── */}
+            {!courseName && recentCourses.length > 0 && !showSearch && coursePickerStep === null && (
+              <div className="mt-2">
+                <div className="flex items-center gap-1.5 text-xs text-gray-400 mb-1.5">
+                  <Clock size={11} />
+                  最近使ったコース
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {recentCourses.map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setCourseName(c)}
+                      className="text-xs bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-full hover:border-golf-green hover:text-golf-green transition-colors"
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ─── インクリメンタルサーチ ─── */}
+            {!courseName && (
+              <div className="mt-2">
+                {!showSearch ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowSearch(true)}
+                    className="flex items-center gap-1.5 text-xs text-golf-green hover:underline"
+                  >
+                    <Search size={12} />
+                    コース名で検索
+                  </button>
+                ) : (
+                  <div>
+                    <div className="relative">
+                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        placeholder="コース名・都道府県名で絞り込み..."
+                        autoFocus
+                        className="w-full border border-golf-green rounded-lg pl-8 pr-3 py-2 text-sm focus:outline-none"
+                      />
+                    </div>
+                    {searchQuery.length >= 1 && (
+                      <div className="mt-1 max-h-48 overflow-y-auto border border-gray-100 rounded-xl bg-white">
+                        {searchResults.length === 0 ? (
+                          <p className="text-xs text-gray-400 p-3 text-center">一致するコースが見つかりません</p>
+                        ) : (
+                          searchResults.map(r => (
+                            <button
+                              key={r.courseName}
+                              type="button"
+                              onClick={() => { setCourseName(r.courseName); setShowSearch(false); setSearchQuery('') }}
+                              className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-gray-50 border-b border-gray-50 last:border-0"
+                            >
+                              <span className="text-sm text-gray-800 text-left">{r.courseName}</span>
+                              <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{r.prefecture}</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    )}
+                    <button type="button" onClick={() => { setShowSearch(false); setSearchQuery('') }} className="mt-1 text-xs text-gray-400">キャンセル</button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* 選択済み or 手入力の表示 */}
             {courseName ? (

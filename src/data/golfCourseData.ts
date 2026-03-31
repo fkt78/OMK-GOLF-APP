@@ -606,3 +606,27 @@ export function findCourseLocation(courseName: string): { region: string; prefec
   }
   return null
 }
+
+/** インクリメンタルサーチ：キーワードでコースを全国横断検索（最大20件） */
+export type CourseSearchResult = {
+  courseName: string
+  prefecture: string
+  region: string
+}
+
+export function searchCourses(query: string, limit = 20): CourseSearchResult[] {
+  if (!query.trim()) return []
+  const q = query.trim().toLowerCase()
+  const results: CourseSearchResult[] = []
+  for (const [region, prefs] of Object.entries(GOLF_COURSE_DB)) {
+    for (const [pref, courses] of Object.entries(prefs)) {
+      for (const c of courses) {
+        if (c.toLowerCase().includes(q) || pref.includes(q)) {
+          results.push({ courseName: c, prefecture: pref, region })
+          if (results.length >= limit) return results
+        }
+      }
+    }
+  }
+  return results
+}
